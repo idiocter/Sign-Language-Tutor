@@ -7,7 +7,23 @@
     "home": "Home",
     "learn": "Dictionary",
     "practice": "Practice",
+    "produce": "Sign it",
     "language": "Language"
+  },
+  "produce_page": {
+    "title": "Text to sign",
+    "subtitle": "Type in English or Nepali and watch the avatar sign it in NSL.",
+    "placeholder": "Type something to sign…",
+    "devanagari": "Devanagari",
+    "sign": "Sign it",
+    "signing": "Building signs…",
+    "gloss": "NSL gloss",
+    "duration": "{ms} ms",
+    "faceActive": "facial grammar active",
+    "faceStatic": "face static",
+    "avatarLabel": "Signing avatar",
+    "procedural": "Procedural placeholder motion derived from sign phonology — awaiting authored Blender clips with ARKit blendshapes.",
+    "error": "Could not build the signing plan. Is the backend running?"
   },
   "home": {
     "title": "Welcome to SignBridge",

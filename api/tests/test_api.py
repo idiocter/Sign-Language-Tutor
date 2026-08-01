@@ -86,3 +86,28 @@ def test_inference_ws():
         ws.send_text('{"features": []}')
         msg = ws.receive_json()
         assert "ready" in msg and "predictions" in msg
+
+
+def test_produce_text_to_sign():
+    r = client.post("/produce", json={"text": "hello thank you", "language": "en"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["steps"], "expected at least one signed step"
+    assert body["has_facial_motion"] is True  # Phase 2: face must move
+    first = body["steps"][0]
+    assert first["pose"]["right_hand"]["location"]  # procedural pose present
+    assert "blendshapes" in first["facial"]
+
+
+def test_produce_falls_back_to_procedural_when_no_glb():
+    # No authored .glb clips exist, so every step should have clip_ref = null.
+    r = client.post("/produce", json={"text": "hello", "language": "en"})
+    assert all(s["clip_ref"] is None for s in r.json()["steps"])
+
+
+def test_clip_manifest():
+    r = client.get("/clips/manifest")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total"] >= 50
+    assert body["authored"] + body["procedural"] == body["total"]

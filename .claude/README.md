@@ -10,6 +10,7 @@ Invoke with `/<name>` in Claude Code, or Claude uses them automatically when the
 |---|---|
 | `add-sign` | Add an `NSL_dddd` sign to `vocabulary.csv` and rebuild the dictionary, enforcing language-neutral IDs and native-signer validation flags. |
 | `train-recognition` | Regenerate synthetic data, train the interim model, export ONNX, verify — or run the production Transformer training when real data exists. |
+| `add-avatar-clip` | Wire an authored glTF sign clip into the avatar (overrides the procedural pose), or explain the Blender + ARKit authoring workflow. |
 | `run-dev` | Start backend + frontend together and verify both are up. |
 
 ## Subagents (`.claude/agents/`)

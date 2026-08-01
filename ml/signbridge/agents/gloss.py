@@ -80,12 +80,24 @@ class GlossTranslationAgent:
                 # Unknown word -> mark for fingerspelling rather than dropping silently.
                 tokens.append(GlossToken(gloss=f"fs({w})"))
 
+        tokens = self._collapse_repeats(tokens)
         tokens = self._reorder(tokens, lang, is_question)
         sentence_nmm = {}
         if is_question:
             # wh-questions: furrowed brows; yes/no: raised brows (NSL non-manual grammar).
             sentence_nmm["eyebrows"] = "furrowed" if any(w in _WH[lang] for w in raw) else "raised"
         return GlossResult(tokens=tokens, sentence_nmm=sentence_nmm)
+
+    @staticmethod
+    def _collapse_repeats(tokens: list[GlossToken]) -> list[GlossToken]:
+        """Collapse consecutive tokens for the same sign — a multi-word label like
+        "thank you" maps both words to one sign and would otherwise gloss it twice."""
+        out: list[GlossToken] = []
+        for t in tokens:
+            if out and t.sign_id is not None and out[-1].sign_id == t.sign_id:
+                continue
+            out.append(t)
+        return out
 
     @staticmethod
     def _reorder(tokens: list[GlossToken], lang: str, is_question: bool) -> list[GlossToken]:

@@ -21,6 +21,9 @@ export default function Nav() {
         <Link href="/practice" className="text-white/80 hover:text-white">
           {t("practice")}
         </Link>
+        <Link href="/produce" className="text-white/80 hover:text-white">
+          {t("produce")}
+        </Link>
         <LocaleSwitcher />
       </nav>
     </header>

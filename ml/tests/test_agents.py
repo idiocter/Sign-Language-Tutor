@@ -33,13 +33,26 @@ def test_gloss_question_sets_nmm():
     assert res.sentence_nmm.get("eyebrows") == "furrowed"
 
 
-def test_animation_plan_has_crossfade_and_facial():
+def test_animation_plan_has_crossfade_pose_and_facial():
     agent = AnimationDirectorAgent(DICT)
     plan = agent.run(["NSL_0001", "NSL_0002"], AgentContext())
     assert len(plan.steps) == 2
     assert plan.steps[0].crossfade_ms == 0
     assert plan.steps[1].crossfade_ms > 0
     assert plan.total_ms > 0
+
+    # Each recognized sign carries a procedural pose with hand placement + movement.
+    step = plan.steps[0]
+    assert step.pose is not None
+    assert "right_hand" in step.pose and "location" in step.pose["right_hand"]
+    assert step.pose["movement"]["kind"]
+
+    # The plan must have real facial motion — Phase 2 fails if the face is static.
+    # NSL_0002 (thank you) has raised brows + a nod.
+    assert plan.has_facial_motion()
+    thankyou = plan.steps[1].facial
+    assert thankyou["blendshapes"].get("browInnerUp", 0) > 0
+    assert thankyou["head_gesture"] == "nod"
 
 
 def test_practice_partner_walks_scenario():

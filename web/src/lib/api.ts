@@ -59,6 +59,58 @@ export async function predictFeatures(features: number[]): Promise<Prediction[]>
   return ((await res.json()) as { predictions: Prediction[] }).predictions;
 }
 
+export interface HandPose {
+  location: [number, number, number];
+  handshape: string;
+  curl: number;
+  palm_normal: [number, number, number];
+}
+
+export interface Pose {
+  two_handed: boolean;
+  symmetric: boolean;
+  movement: { kind: string; amplitude: number; repeats: number };
+  right_hand: HandPose;
+  left_hand: HandPose | null;
+  procedural: boolean;
+}
+
+export interface FacialTrack {
+  blendshapes: Record<string, number>;
+  head_rotation: [number, number, number];
+  head_gesture: "nod" | "shake" | null;
+  static: boolean;
+}
+
+export interface AnimationStep {
+  sign_id: string;
+  gloss: string;
+  clip_ref: string | null;
+  start_ms: number;
+  duration_ms: number;
+  crossfade_ms: number;
+  pose: Pose | null;
+  facial: FacialTrack;
+}
+
+export interface ProducePlan {
+  gloss: string;
+  sentence_nmm: Record<string, string>;
+  total_ms: number;
+  has_facial_motion: boolean;
+  steps: AnimationStep[];
+}
+
+export async function produce(text: string, language: string): Promise<ProducePlan> {
+  const res = await fetch(`${API_BASE}/produce`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, language }),
+  });
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json() as Promise<ProducePlan>;
+}
+
 export async function transliterate(text: string): Promise<string> {
   const res = await fetch(`${API_BASE}/signs/transliterate`, {
     method: "POST",

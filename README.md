@@ -50,8 +50,10 @@ repository cannot generate:
 | DTW joint-angle scoring + error decomposition | |
 | FSRS spaced-repetition scheduler | |
 | All six Layer-7 agents (symbolic-only) | |
-| FastAPI backend (schema, tutor, inference) | |
-| Next.js UI: avatar, webcam, recognition demo, i18n | |
+| **Text → NSL gloss → animated avatar** (procedural) | Authored Blender/ARKit `.glb` clips |
+| **Co-articulation blending + ARKit facial track** | |
+| FastAPI backend (schema, tutor, inference, produce) | |
+| Next.js UI: avatar, webcam, recognition + sign demo, i18n | |
 
 The interim model trains on **synthetic** data so the whole Phase 1 loop runs today; its
 accuracy measures the pipeline, not real NSL recognition. Replace it via the
@@ -116,7 +118,7 @@ Tracks [`PROJECT_PLAN.md`](Guide/files/PROJECT_PLAN.md). Checked = scaffolded an
 - [x] **Phase 0 — Foundation:** schema, vocabulary, capture tool, transliteration, repo
 - [~] **Phase 1 — Recognition MVP:** full pipeline runs end-to-end (synth data → train → ONNX → in-browser + backend inference, live demo); production model needs real NSL data + GPU
 - [~] **Phase 1.5 — Fingerspelling:** MobileNetV3 classifier stub
-- [~] **Phase 2 — Avatar:** three.js player + clip-registry contract; needs authored `.glb` clips
+- [~] **Phase 2 — Avatar:** text → gloss → animated signing runs end-to-end (procedural pose + ARKit facial track + co-articulation blending, live `/produce` + Sign-it page); needs authored `.glb` clips + deaf-advisor intelligibility validation. See [docs/avatar-authoring.md](docs/avatar-authoring.md)
 - [~] **Phase 3 — Tutor loop:** FSRS scheduler + DTW scoring + all six Layer-7 agents built
 - [ ] **Phase 4 — Interpreter mode:** contracts only
 - [ ] **Phase 5 — Evaluation & deploy**
