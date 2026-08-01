@@ -39,16 +39,27 @@ repository cannot generate:
 
 | Built now (runnable) | Left as stubs (needs external work) |
 |---|---|
-| Sign schema loader + validation | Trained recognition model weights (need NSL data + GPU) |
+| Sign schema loader + validation | **Production** recognition weights (need real NSL data + GPU) |
 | 200-slot vocabulary + seeded core signs | NSL landmark dataset (Phase 0–1 collection with signers) |
 | Roman → Devanagari transliteration + tests | Avatar `.glb` clips (Blender authoring, Phase 2) |
 | Landmark capture tool (from the guide) | Whisper NSL/Nepali ASR fine-tune (Phase 4) |
 | Preprocessing: normalize / augment / signer-split | Nepali TTS voice |
-| Transformer encoder architecture | |
+| Transformer encoder + full training loop | |
+| **Interim recognition model** (synthetic data → ONNX) | |
+| **End-to-end inference**: in-browser + backend | |
 | DTW joint-angle scoring + error decomposition | |
 | FSRS spaced-repetition scheduler | |
-| FastAPI backend (schema, tutor, inference WS stub) | |
-| Next.js UI shell: avatar canvas, webcam stub, i18n | |
+| All six Layer-7 agents (symbolic-only) | |
+| FastAPI backend (schema, tutor, inference) | |
+| Next.js UI: avatar, webcam, recognition demo, i18n | |
+
+The interim model trains on **synthetic** data so the whole Phase 1 loop runs today; its
+accuracy measures the pipeline, not real NSL recognition. Replace it via the
+`train-recognition` skill once real signs are collected.
+
+Claude Code **skills** and **subagents** for this repo live in [`.claude/`](.claude/README.md)
+(`/add-sign`, `/train-recognition`, `/run-dev`; `nsl-data-reviewer`,
+`signbridge-invariant-guard`).
 
 `grep -rn "STUB" .` lists every deliberate placeholder and what it is waiting on.
 
@@ -103,10 +114,10 @@ webcam recognizer will run — see [`DOWNLOADS.md`](Guide/files/DOWNLOADS.md#1-m
 Tracks [`PROJECT_PLAN.md`](Guide/files/PROJECT_PLAN.md). Checked = scaffolded and runnable.
 
 - [x] **Phase 0 — Foundation:** schema, vocabulary, capture tool, transliteration, repo
-- [~] **Phase 1 — Recognition MVP:** preprocessing + model architecture in place; needs data + training
+- [~] **Phase 1 — Recognition MVP:** full pipeline runs end-to-end (synth data → train → ONNX → in-browser + backend inference, live demo); production model needs real NSL data + GPU
 - [~] **Phase 1.5 — Fingerspelling:** MobileNetV3 classifier stub
 - [~] **Phase 2 — Avatar:** three.js player + clip-registry contract; needs authored `.glb` clips
-- [~] **Phase 3 — Tutor loop:** FSRS scheduler + DTW scoring built; agents stubbed
+- [~] **Phase 3 — Tutor loop:** FSRS scheduler + DTW scoring + all six Layer-7 agents built
 - [ ] **Phase 4 — Interpreter mode:** contracts only
 - [ ] **Phase 5 — Evaluation & deploy**
 

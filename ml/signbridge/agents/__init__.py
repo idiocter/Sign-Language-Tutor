@@ -12,6 +12,21 @@ Language-aware agents (Critique, Gloss Translation, Practice Partner) need **sep
 prompts per language pair** — Nepali is SOV, English is SVO, NSL is topic-comment.
 """
 
+from .animation import AnimationDirectorAgent  # noqa: F401
 from .base import Agent, AgentContext  # noqa: F401
 from .critique import CritiqueAgent  # noqa: F401
 from .curriculum import CurriculumAgent  # noqa: F401
+from .data_curator import DataCuratorAgent  # noqa: F401
+from .gloss import GlossTranslationAgent  # noqa: F401
+from .practice_partner import PracticePartnerAgent  # noqa: F401
+
+# The six agents from TECH_STACK.md Layer 7. Vision stays outside this loop — agents only
+# ever see symbolic data (sign IDs, scores, mastery), never raw video.
+ALL_AGENTS = [
+    "curriculum",
+    "critique",
+    "gloss_translation",
+    "animation_director",
+    "practice_partner",
+    "data_curator",
+]
