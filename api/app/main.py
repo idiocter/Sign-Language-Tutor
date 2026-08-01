@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import init_db
+from .routers import eval as eval_router
 from .routers import inference, interpret, produce, signs, tutor
 
 
@@ -38,6 +39,7 @@ app.include_router(tutor.router)
 app.include_router(inference.router)
 app.include_router(produce.router)
 app.include_router(interpret.router)
+app.include_router(eval_router.router)
 
 
 @app.get("/health", tags=["meta"])

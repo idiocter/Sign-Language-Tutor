@@ -1,7 +1,7 @@
 # SignBridge convenience targets. See README.md for details.
 # Note: the ML/vision `full` extra (capture, torch training) needs Python 3.11/3.12.
 
-.PHONY: help setup-ml setup-api setup-web setup data train test dev
+.PHONY: help setup-ml setup-api setup-web setup data train eval test dev
 
 help:
 	@echo "make setup     - create venvs + install ml, api, web"
@@ -27,6 +27,9 @@ data:
 train:
 	cd ml && ./.venv/bin/python scripts/train_lite.py
 	cd ml && ./.venv/bin/python scripts/train_fingerspelling.py
+
+eval:
+	cd ml && ./.venv/bin/python scripts/eval.py
 
 test:
 	cd ml && ./.venv/bin/pytest -q

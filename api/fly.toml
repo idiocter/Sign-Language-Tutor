@@ -1,0 +1,19 @@
+# Fly.io deploy for the SignBridge API.
+#   fly launch --no-deploy   # once, to create the app
+#   fly deploy               # build api/Dockerfile from the repo root
+app = "signbridge-api"
+primary_region = "sin"       # Singapore — closest Fly region to Nepal
+
+[build]
+  dockerfile = "api/Dockerfile"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[env]
+  # Set secrets with: fly secrets set DATABASE_URL=... CORS_ORIGINS=...
+  CORS_ORIGINS = "https://signbridge.vercel.app"

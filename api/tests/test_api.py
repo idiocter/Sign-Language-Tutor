@@ -159,6 +159,22 @@ def test_produce_single_sign():
     assert client.get("/produce/sign", params={"sign_id": "NSL_9999"}).status_code == 404
 
 
+def test_eval_models_and_ratings():
+    r = client.get("/eval/models")
+    assert r.status_code == 200
+    assert "recognition" in r.json() and "fingerspelling" in r.json()
+
+    # submit an intelligibility rating and see it reflected in the summary
+    assert client.post("/eval/rating", json={"sign_id": "NSL_0001", "score": 5}).status_code == 200
+    summary = client.get("/eval/ratings/summary").json()
+    assert summary["count"] >= 1
+    assert summary["mean_score"] is not None
+
+
+def test_eval_rating_validates_score():
+    assert client.post("/eval/rating", json={"sign_id": "NSL_0001", "score": 9}).status_code == 422
+
+
 def test_fingerspell_status():
     r = client.get("/inference/fingerspell/status")
     assert r.status_code == 200 and "ready" in r.json()

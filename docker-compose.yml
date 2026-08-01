@@ -1,0 +1,40 @@
+# Local production-like run of the whole stack.
+#   make data train      # generate model artifacts first (the API serves them)
+#   docker compose up --build
+# web -> http://localhost:3000   api -> http://localhost:8000/docs
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Swap to Postgres in production, e.g.
+      # DATABASE_URL: postgresql+psycopg://signbridge:secret@db/signbridge
+      DATABASE_URL: sqlite:////app/api/signbridge.db
+      CORS_ORIGINS: http://localhost:3000
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  # Production datastores (uncomment when using Postgres + Redis):
+  # db:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_USER: signbridge
+  #     POSTGRES_PASSWORD: secret
+  #     POSTGRES_DB: signbridge
+  #   volumes: ["pgdata:/var/lib/postgresql/data"]
+  # redis:
+  #   image: redis:7
+# volumes:
+#   pgdata:

@@ -197,6 +197,35 @@ export function fingerspell(word: string): Promise<SpellResult> {
   return getJSON<SpellResult>(`/inference/fingerspell/spell?word=${encodeURIComponent(word)}`);
 }
 
+export interface EvalModels {
+  recognition: Record<string, unknown> | null;
+  fingerspelling: Record<string, unknown> | null;
+}
+
+export interface RatingsSummary {
+  count: number;
+  mean_score: number | null;
+  passes_gate: boolean;
+  per_sign: { sign_id: string; count: number; mean: number }[];
+}
+
+export function getEvalModels(): Promise<EvalModels> {
+  return getJSON<EvalModels>("/eval/models");
+}
+
+export function getRatingsSummary(): Promise<RatingsSummary> {
+  return getJSON<RatingsSummary>("/eval/ratings/summary");
+}
+
+export async function submitRating(signId: string, score: number, comment?: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/eval/rating`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sign_id: signId, score, comment }),
+  });
+  if (!res.ok) throw new Error(`${res.status}`);
+}
+
 export async function transliterate(text: string): Promise<string> {
   const res = await fetch(`${API_BASE}/signs/transliterate`, {
     method: "POST",

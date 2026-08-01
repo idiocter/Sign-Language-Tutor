@@ -10,7 +10,27 @@
     "practice": "Practice",
     "produce": "Sign it",
     "interpret": "Interpret",
+    "eval": "Evaluation",
     "language": "Language"
+  },
+  "eval": {
+    "title": "Evaluation",
+    "subtitle": "Signer-independent model metrics and native-signer avatar intelligibility.",
+    "recognition": "Sign recognition",
+    "fingerspelling": "Fingerspelling",
+    "heldoutAcc": "Held-out signer accuracy",
+    "classes": "Classes",
+    "data": "Data",
+    "synthetic": "synthetic",
+    "real": "real",
+    "intelTitle": "Avatar intelligibility",
+    "intelSubtitle": "The metric that actually matters — rated by native NSL signers (1–5).",
+    "ratePrompt": "How intelligible is this sign? (1 = unclear, 5 = perfectly clear)",
+    "saved": "Saved — thank you.",
+    "mean": "Mean intelligibility",
+    "gatePass": "Meets the ≥4/5 intelligibility gate.",
+    "gateFail": "Below the ≥4/5 gate (Phase 2/5 exit criterion).",
+    "note": "Model accuracy here is on SYNTHETIC data — it validates the harness, not real NSL recognition. Intelligibility ratings must be collected from deaf NSL signers to be meaningful."
   },
   "interpret": {
     "title": "Interpreter",

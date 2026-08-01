@@ -115,12 +115,25 @@ webcam recognizer will run — see [`DOWNLOADS.md`](Guide/files/DOWNLOADS.md#1-m
 
 Tracks [`PROJECT_PLAN.md`](Guide/files/PROJECT_PLAN.md). Checked = scaffolded and runnable.
 
-- [x] **Phase 0 — Foundation:** schema, vocabulary, capture tool, transliteration, repo
-- [~] **Phase 1 — Recognition MVP:** full pipeline runs end-to-end (synth data → train → ONNX → in-browser + backend inference, live demo); production model needs real NSL data + GPU
-- [~] **Phase 1.5 — Fingerspelling:** MobileNetV3 classifier stub
-- [~] **Phase 2 — Avatar:** text → gloss → animated signing runs end-to-end (procedural pose + ARKit facial track + co-articulation blending, live `/produce` + Sign-it page); needs authored `.glb` clips + deaf-advisor intelligibility validation. See [docs/avatar-authoring.md](docs/avatar-authoring.md)
-- [~] **Phase 3 — Tutor loop:** FSRS scheduler + DTW scoring + all six Layer-7 agents built
-- [ ] **Phase 4 — Interpreter mode:** contracts only
-- [ ] **Phase 5 — Evaluation & deploy**
+All seven phases are implemented and run end-to-end. `[~]` marks phases whose plan exit
+criteria still depend on external work (real NSL data, GPU training, authored `.glb` clips,
+deaf-community validation, cloud accounts) — the pipeline is built and runnable now with
+synthetic/interim/browser-native stand-ins, clearly labeled, with the seam to swap the real
+asset in.
 
-`[x]` done · `[~]` scaffolded, needs external work · `[ ]` contract/stub only
+- [x] **Phase 0 — Foundation:** schema, vocabulary, capture tool, transliteration, repo
+- [~] **Phase 1 — Recognition MVP:** synth data → signer-split train → ONNX → in-browser + backend inference, live demo; production model needs real NSL data + GPU
+- [~] **Phase 1.5 — Fingerspelling:** 48-char Devanagari alphabet, interim classifier + ONNX, live spell demo; needs real handshape data
+- [~] **Phase 2 — Avatar:** text → gloss → animated signing (procedural pose + ARKit facial track + co-articulation), live `/produce` + Sign-it page; needs authored `.glb` clips + intelligibility validation. See [docs/avatar-authoring.md](docs/avatar-authoring.md)
+- [~] **Phase 3 — Tutor loop:** end-to-end lessons (avatar → FSRS rating → scheduled review), streaks in Bikram Sambat, DTW scoring, all six Layer-7 agents
+- [~] **Phase 4 — Interpreter mode:** bidirectional — text/speech → sign, sign → text/speech (browser Web Speech; text fallback always); needs Nepali ASR/TTS + continuous recognition
+- [~] **Phase 5 — Evaluation & deploy:** signer-independent eval harness, native-signer intelligibility rating collection, Docker + Fly/Vercel configs. See [docs/deploy.md](docs/deploy.md); actual cloud deploy + community ratings are external
+
+`[x]` done · `[~]` built & runnable, real-world exit criteria need external work
+
+## What genuinely remains (not code)
+
+Collect NSL data with deaf signers · train the production models on a GPU · author avatar
+`.glb` clips in Blender with ARKit blendshapes · fine-tune Nepali ASR/TTS · gather
+native-signer intelligibility ratings · run the cloud deploy. The code, contracts, docs,
+and swap-in seams for all of these exist.

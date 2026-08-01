@@ -59,3 +59,19 @@ class Attempt(Base):
     overall: Mapped[float] = mapped_column(Float)
     feedback_target: Mapped[str] = mapped_column(String(16))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class IntelligibilityRating(Base):
+    """A native-signer rating of an avatar's intelligibility for a sign (Phase 5).
+
+    This is THE metric that matters for the avatar (PROJECT_PLAN.md). The table collects it;
+    the ratings must come from deaf NSL signers, not developers.
+    """
+
+    __tablename__ = "intelligibility_ratings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sign_id: Mapped[str] = mapped_column(String(16), index=True)
+    score: Mapped[int] = mapped_column(Integer)  # 1..5
+    comment: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

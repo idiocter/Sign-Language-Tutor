@@ -30,6 +30,9 @@ export default function Nav() {
         <Link href="/interpret" className="text-white/80 hover:text-white">
           {t("interpret")}
         </Link>
+        <Link href="/eval" className="text-white/80 hover:text-white">
+          {t("eval")}
+        </Link>
         <LocaleSwitcher />
       </nav>
     </header>
