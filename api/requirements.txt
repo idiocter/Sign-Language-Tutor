@@ -1,0 +1,17 @@
+# Install the ml foundation package first so `signbridge` is importable:
+#   pip install -e ../ml[foundation]
+# then:
+#   pip install -r requirements.txt
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
+websockets>=12.0
+pydantic>=2.7
+sqlalchemy>=2.0
+python-dotenv>=1.0
+
+# Production datastores (optional in dev — the app defaults to SQLite + in-memory):
+#   psycopg[binary]>=3.1   # PostgreSQL + pgvector for embedding search
+#   redis>=5.0             # session / cache
+httpx>=0.27          # test client dependency for the API tests
+pytest>=8.0
