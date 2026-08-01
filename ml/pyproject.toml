@@ -25,6 +25,8 @@ foundation = [
     "nepali-datetime>=1.0",
     "fastdtw>=0.3.4",
     "fsrs>=4.0",
+    "onnx>=1.16",          # build/export the interim recognition model
+    "onnxruntime>=1.18",   # run it (also the API's server-side inference path)
     "pytest>=8.0",
 ]
 # Full ML/vision stack — requires Python 3.11/3.12.

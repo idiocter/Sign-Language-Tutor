@@ -44,6 +44,19 @@
     "modelMissing": "MediaPipe models not found. Download them into public/models/mediapipe (see DOWNLOADS.md).",
     "notReady": "Recognition model is not trained yet — this shows detected landmarks only."
   },
+  "recognize": {
+    "title": "Recognition demo (Phase 1)",
+    "ready": "model loaded · {n} signs",
+    "noModel": "no model — run train_lite.py",
+    "selfTest": "Self-test on held-out signers: {acc}% (synthetic data)",
+    "test": "Test recognition",
+    "running": "Recognizing…",
+    "correct": "Recognized ✓",
+    "wrong": "Misrecognized ✗",
+    "engine": "engine",
+    "error": "Could not run recognition. Is the backend running?",
+    "synthetic": "Interim model trained on synthetic data — measures the pipeline, not real NSL recognition."
+  },
   "language": {
     "en": "English",
     "ne": "नेपाली"

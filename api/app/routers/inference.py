@@ -1,53 +1,114 @@
-"""Streaming recognition inference — WebSocket fallback path.
+"""Recognition inference: status, predict, demo, and a streaming WebSocket.
 
-Primary inference runs **in-browser** (ONNX Runtime Web) so video never leaves the device
-(PROJECT_PLAN.md Phase 1). This server endpoint is the fallback for clients that can't run
-WebGPU: it receives normalized landmark frames and returns a predicted sign.
+Primary inference runs **in-browser** (onnxruntime-web) so video never leaves the device.
+These endpoints are the server-side path: model status, direct prediction from pooled
+features, a self-contained demo (synthesize an attempt for a sign, then recognize it), and
+a WebSocket fallback for clients without WebGPU.
 
-STUB: no trained weights exist yet, so this returns a deterministic placeholder prediction.
-Wire `signbridge.models.sign_transformer.SignTransformer` + an ONNX/torch session here once
-a model is trained. The message contract below is stable and safe to build the UI against.
+The model here is the interim linear classifier trained on synthetic data
+(ml/scripts/train_lite.py). Swap in the real Transformer's ONNX export when trained.
 """
 
 from __future__ import annotations
 
 import json
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel, Field
 
-from signbridge.config import SEQ_LEN
+from ..inference_engine import get_engine
 
-from .signs import _dictionary
-
-router = APIRouter(tags=["inference"])
+router = APIRouter(prefix="/inference", tags=["inference"])
 
 
-@router.websocket("/ws/inference")
+class PredictIn(BaseModel):
+    features: list[float] = Field(..., description="pooled feature vector (mean++std)")
+    top_k: int = 3
+
+
+class Prediction(BaseModel):
+    sign_id: str
+    confidence: float
+
+
+class PredictOut(BaseModel):
+    predictions: list[Prediction]
+
+
+class DemoOut(BaseModel):
+    target: str
+    predicted: str
+    correct: bool
+    predictions: list[Prediction]
+
+
+@router.get("/status")
+def status() -> dict:
+    e = get_engine()
+    return {
+        "ready": e.ready,
+        "num_classes": len(e.labels),
+        "metrics": e.metrics,
+        "has_prototypes": bool(e.prototypes),
+    }
+
+
+@router.post("/predict", response_model=PredictOut)
+def predict(payload: PredictIn) -> PredictOut:
+    e = get_engine()
+    if not e.ready:
+        raise HTTPException(503, "recognition model not loaded — run ml/scripts/train_lite.py")
+    return PredictOut(predictions=[Prediction(**p) for p in e.predict(payload.features, payload.top_k)])
+
+
+@router.post("/demo", response_model=DemoOut)
+def demo(sign_id: str) -> DemoOut:
+    """Synthesize an attempt for ``sign_id`` and recognize it — a closed-loop demo."""
+    e = get_engine()
+    if not e.ready:
+        raise HTTPException(503, "recognition model not loaded — run ml/scripts/train_lite.py")
+    try:
+        feats = e.sample_features(sign_id)
+    except KeyError:
+        raise HTTPException(404, f"no prototype for {sign_id} (not in the trained model)")
+    preds = e.predict(feats, top_k=3)
+    predicted = preds[0]["sign_id"] if preds else ""
+    return DemoOut(
+        target=sign_id,
+        predicted=predicted,
+        correct=predicted == sign_id,
+        predictions=[Prediction(**p) for p in preds],
+    )
+
+
+class SampleOut(BaseModel):
+    sign_id: str
+    features: list[float]
+
+
+@router.get("/sample", response_model=SampleOut)
+def sample(sign_id: str) -> SampleOut:
+    """Return a synthesized pooled-feature attempt for a sign, so the browser can run
+    inference locally (onnxruntime-web) without a webcam or downloaded MediaPipe models."""
+    e = get_engine()
+    if not e.ready:
+        raise HTTPException(503, "recognition model not loaded — run ml/scripts/train_lite.py")
+    try:
+        return SampleOut(sign_id=sign_id, features=e.sample_features(sign_id))
+    except KeyError:
+        raise HTTPException(404, f"no prototype for {sign_id}")
+
+
+@router.websocket("/ws")
 async def inference_ws(ws: WebSocket) -> None:
-    """Protocol:
-
-    client -> {"frames": [[...FEATURE_DIM...], ...]}   # a window of normalized landmarks
-    server -> {"sign_id", "label_en", "label_ne", "confidence", "stub": true}
-    """
+    """client -> {"features": [...]}  ;  server -> {predictions:[...], ready:bool}"""
     await ws.accept()
-    signs = _dictionary().signs
+    e = get_engine()
     try:
         while True:
-            raw = await ws.receive_text()
-            msg = json.loads(raw)
-            frames = msg.get("frames", [])
-            # Placeholder: pick a sign deterministically from the window length so the UI
-            # sees changing, well-formed responses. Replace with a real model forward pass.
-            idx = (len(frames) or SEQ_LEN) % len(signs)
-            s = signs[idx]
-            await ws.send_json(
-                {
-                    "sign_id": s.sign_id,
-                    "label_en": s.labels.en,
-                    "label_ne": s.labels.ne,
-                    "confidence": 0.0,
-                    "stub": True,
-                }
-            )
+            msg = json.loads(await ws.receive_text())
+            feats = msg.get("features")
+            preds = e.predict(feats, top_k=3) if (e.ready and feats) else []
+            await ws.send_json({"ready": e.ready, "predictions": preds})
     except WebSocketDisconnect:
         return

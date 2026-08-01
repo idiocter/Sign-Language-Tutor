@@ -18,7 +18,10 @@ htmlcov/
 ml/data/raw/
 ml/data/processed/
 ml/data/refs/*.npy
+ml/artifacts/
+api/models/
 models/mediapipe/*.task
+web/public/models/recognition/
 web/public/models/
 *.glb
 *.onnx

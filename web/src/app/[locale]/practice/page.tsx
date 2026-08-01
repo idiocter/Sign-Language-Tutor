@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { listSigns, type Sign } from "@/lib/api";
 import { useSession } from "@/lib/store";
 import WebcamRecognizer from "@/components/WebcamRecognizer";
+import RecognitionDemo from "@/components/RecognitionDemo";
 
 // three.js must not render on the server.
 const Avatar = dynamic(() => import("@/components/Avatar"), { ssr: false });
@@ -57,6 +58,8 @@ export default function PracticePage() {
           <WebcamRecognizer />
         </section>
       </div>
+
+      <RecognitionDemo signId={targetSignId} />
     </div>
   );
 }

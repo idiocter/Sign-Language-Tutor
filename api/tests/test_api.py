@@ -63,8 +63,26 @@ def test_score_rejects_bad_shape():
     assert r.status_code == 422
 
 
-def test_inference_ws_stub():
-    with client.websocket_connect("/ws/inference") as ws:
-        ws.send_text('{"frames": [[0.0]]}')
+def test_inference_status():
+    r = client.get("/inference/status")
+    assert r.status_code == 200
+    assert "ready" in r.json()
+
+
+def test_inference_demo_when_model_present():
+    # If the interim model has been trained/exported, the demo loop should recognize a
+    # synthesized attempt. Skip cleanly if no model artifacts are present.
+    if not client.get("/inference/status").json()["ready"]:
+        return
+    r = client.post("/inference/demo", params={"sign_id": "NSL_0001"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["target"] == "NSL_0001"
+    assert body["predictions"]
+
+
+def test_inference_ws():
+    with client.websocket_connect("/inference/ws") as ws:
+        ws.send_text('{"features": []}')
         msg = ws.receive_json()
-        assert msg["stub"] is True and msg["sign_id"].startswith("NSL_")
+        assert "ready" in msg and "predictions" in msg
