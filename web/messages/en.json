@@ -73,6 +73,15 @@
     "error": "Could not run recognition. Is the backend running?",
     "synthetic": "Interim model trained on synthetic data — measures the pipeline, not real NSL recognition."
   },
+  "fingerspell": {
+    "title": "Fingerspelling (Phase 1.5)",
+    "placeholder": "Type a word (e.g. namaste)…",
+    "spell": "Fingerspell",
+    "spelling": "Spelling…",
+    "recognized": "Handshapes recognized: {pct}%",
+    "synthetic": "Interim model on synthetic hand poses — measures the pipeline, not real fingerspelling.",
+    "error": "Could not fingerspell. Is the backend running?"
+  },
   "language": {
     "en": "English",
     "ne": "नेपाली"

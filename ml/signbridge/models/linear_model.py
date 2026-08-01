@@ -37,13 +37,18 @@ def _softmax(z: np.ndarray) -> np.ndarray:
 
 
 class LinearSignClassifier:
-    """Multinomial logistic regression with standardized inputs."""
+    """Multinomial logistic regression with standardized inputs.
 
-    def __init__(self, labels: list[str]):
+    ``input_dim`` defaults to the pooled sign-feature size (``2 * FEATURE_DIM``) but can be
+    any value — the fingerspelling model reuses this with single-frame hand features.
+    """
+
+    def __init__(self, labels: list[str], input_dim: int = INPUT_DIM):
         self.labels = labels
-        self.mean = np.zeros(INPUT_DIM, dtype=np.float32)
-        self.scale = np.ones(INPUT_DIM, dtype=np.float32)
-        self.W = np.zeros((INPUT_DIM, len(labels)), dtype=np.float32)
+        self.input_dim = input_dim
+        self.mean = np.zeros(input_dim, dtype=np.float32)
+        self.scale = np.ones(input_dim, dtype=np.float32)
+        self.W = np.zeros((input_dim, len(labels)), dtype=np.float32)
         self.b = np.zeros(len(labels), dtype=np.float32)
 
     # --- training -----------------------------------------------------------
@@ -66,7 +71,7 @@ class LinearSignClassifier:
 
         n, c = X.shape[0], len(self.labels)
         rng = np.random.default_rng(seed)
-        self.W = (rng.normal(0, 0.01, (INPUT_DIM, c))).astype(np.float32)
+        self.W = (rng.normal(0, 0.01, (self.input_dim, c))).astype(np.float32)
         self.b = np.zeros(c, dtype=np.float32)
         Y = np.eye(c, dtype=np.float32)[y]
 
@@ -108,7 +113,7 @@ class LinearSignClassifier:
         W_init = numpy_helper.from_array(W_eff, name="W")
         b_init = numpy_helper.from_array(b_eff, name="b")
 
-        inp = helper.make_tensor_value_info("features", TensorProto.FLOAT, [1, INPUT_DIM])
+        inp = helper.make_tensor_value_info("features", TensorProto.FLOAT, [1, self.input_dim])
         out = helper.make_tensor_value_info(
             "probs", TensorProto.FLOAT, [1, len(self.labels)]
         )

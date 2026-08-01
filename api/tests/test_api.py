@@ -105,6 +105,22 @@ def test_produce_falls_back_to_procedural_when_no_glb():
     assert all(s["clip_ref"] is None for s in r.json()["steps"])
 
 
+def test_fingerspell_status():
+    r = client.get("/inference/fingerspell/status")
+    assert r.status_code == 200 and "ready" in r.json()
+
+
+def test_fingerspell_spell_word():
+    if not client.get("/inference/fingerspell/status").json()["ready"]:
+        return
+    r = client.get("/inference/fingerspell/spell", params={"word": "namaste"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["devanagari"]  # transliterated
+    assert body["chars"], "expected recognized characters"
+    assert 0.0 <= body["accuracy"] <= 1.0
+
+
 def test_clip_manifest():
     r = client.get("/clips/manifest")
     assert r.status_code == 200

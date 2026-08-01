@@ -14,7 +14,9 @@ from pathlib import Path
 
 import numpy as np
 
-MODEL_DIR = Path(__file__).resolve().parent.parent / "models" / "recognition"
+MODELS_ROOT = Path(__file__).resolve().parent.parent / "models"
+MODEL_DIR = MODELS_ROOT / "recognition"
+FINGERSPELL_DIR = MODELS_ROOT / "fingerspelling"
 
 
 class InferenceEngine:
@@ -22,6 +24,7 @@ class InferenceEngine:
         self.model_dir = model_dir
         self.ready = False
         self.labels: list[str] = []
+        self.romans: list[str] = []
         self.prototypes: dict[str, list[float]] = {}
         self.metrics: dict = {}
         self._sess = None
@@ -37,7 +40,9 @@ class InferenceEngine:
 
             self._sess = ort.InferenceSession(str(model_path))
             self._input_name = self._sess.get_inputs()[0].name
-            self.labels = json.loads((self.model_dir / "labels.json").read_text())["labels"]
+            labels_doc = json.loads((self.model_dir / "labels.json").read_text())
+            self.labels = labels_doc["labels"]
+            self.romans = labels_doc.get("romans", [])
             proto_path = self.model_dir / "prototypes.json"
             self.prototypes = json.loads(proto_path.read_text()) if proto_path.exists() else {}
             metrics_path = self.model_dir / "metrics.json"
@@ -71,4 +76,9 @@ class InferenceEngine:
 
 @lru_cache(maxsize=1)
 def get_engine() -> InferenceEngine:
-    return InferenceEngine()
+    return InferenceEngine(MODEL_DIR)
+
+
+@lru_cache(maxsize=1)
+def get_fingerspell_engine() -> InferenceEngine:
+    return InferenceEngine(FINGERSPELL_DIR)

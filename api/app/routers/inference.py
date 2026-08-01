@@ -16,9 +16,13 @@ import json
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
-from ..inference_engine import get_engine
+from signbridge.fingerspelling import spellable
+from signbridge.transliterate import build_lexicon, to_devanagari
+
+from ..inference_engine import get_engine, get_fingerspell_engine
 
 router = APIRouter(prefix="/inference", tags=["inference"])
+_LEXICON = build_lexicon()
 
 
 class PredictIn(BaseModel):
@@ -97,6 +101,64 @@ def sample(sign_id: str) -> SampleOut:
         return SampleOut(sign_id=sign_id, features=e.sample_features(sign_id))
     except KeyError:
         raise HTTPException(404, f"no prototype for {sign_id}")
+
+
+# --- Fingerspelling (Phase 1.5) ---------------------------------------------
+
+
+class SpellCharOut(BaseModel):
+    target_char: str
+    target_roman: str
+    predicted_char: str
+    correct: bool
+    confidence: float
+
+
+class SpellOut(BaseModel):
+    input: str
+    devanagari: str
+    chars: list[SpellCharOut]
+    accuracy: float
+
+
+@router.get("/fingerspell/status")
+def fingerspell_status() -> dict:
+    e = get_fingerspell_engine()
+    return {"ready": e.ready, "num_classes": len(e.labels), "metrics": e.metrics}
+
+
+@router.get("/fingerspell/spell", response_model=SpellOut)
+def fingerspell(word: str) -> SpellOut:
+    """Transliterate a (Romanized or Devanagari) word, fingerspell each character, and
+    recognize each handshape — a closed-loop demo of the manual alphabet."""
+    e = get_fingerspell_engine()
+    if not e.ready:
+        raise HTTPException(503, "fingerspelling model not loaded — run train_fingerspelling.py")
+    deva = to_devanagari(word, lexicon=_LEXICON)
+    chars = spellable(deva)
+    out: list[SpellCharOut] = []
+    hits = 0
+    roman_by_char = dict(zip(e.labels, e.romans)) if e.romans else {}
+    for ch in chars:
+        try:
+            feats = e.sample_features(ch)
+        except KeyError:
+            continue
+        preds = e.predict(feats, top_k=1)
+        pred = preds[0]["sign_id"] if preds else ""
+        correct = pred == ch
+        hits += int(correct)
+        out.append(
+            SpellCharOut(
+                target_char=ch,
+                target_roman=roman_by_char.get(ch, ""),
+                predicted_char=pred,
+                correct=correct,
+                confidence=preds[0]["confidence"] if preds else 0.0,
+            )
+        )
+    acc = hits / len(out) if out else 0.0
+    return SpellOut(input=word, devanagari=deva, chars=out, accuracy=round(acc, 3))
 
 
 @router.websocket("/ws")

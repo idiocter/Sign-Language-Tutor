@@ -7,6 +7,7 @@ import { listSigns, type Sign } from "@/lib/api";
 import { useSession } from "@/lib/store";
 import WebcamRecognizer from "@/components/WebcamRecognizer";
 import RecognitionDemo from "@/components/RecognitionDemo";
+import FingerspellDemo from "@/components/FingerspellDemo";
 
 // three.js must not render on the server.
 const Avatar = dynamic(() => import("@/components/Avatar"), { ssr: false });
@@ -59,7 +60,10 @@ export default function PracticePage() {
         </section>
       </div>
 
-      <RecognitionDemo signId={targetSignId} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <RecognitionDemo signId={targetSignId} />
+        <FingerspellDemo />
+      </div>
     </div>
   );
 }

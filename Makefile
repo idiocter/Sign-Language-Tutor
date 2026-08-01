@@ -26,6 +26,7 @@ data:
 
 train:
 	cd ml && ./.venv/bin/python scripts/train_lite.py
+	cd ml && ./.venv/bin/python scripts/train_fingerspelling.py
 
 test:
 	cd ml && ./.venv/bin/pytest -q

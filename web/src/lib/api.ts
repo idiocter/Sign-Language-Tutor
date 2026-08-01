@@ -111,6 +111,25 @@ export async function produce(text: string, language: string): Promise<ProducePl
   return res.json() as Promise<ProducePlan>;
 }
 
+export interface SpellChar {
+  target_char: string;
+  target_roman: string;
+  predicted_char: string;
+  correct: boolean;
+  confidence: number;
+}
+
+export interface SpellResult {
+  input: string;
+  devanagari: string;
+  chars: SpellChar[];
+  accuracy: number;
+}
+
+export function fingerspell(word: string): Promise<SpellResult> {
+  return getJSON<SpellResult>(`/inference/fingerspell/spell?word=${encodeURIComponent(word)}`);
+}
+
 export async function transliterate(text: string): Promise<string> {
   const res = await fetch(`${API_BASE}/signs/transliterate`, {
     method: "POST",
