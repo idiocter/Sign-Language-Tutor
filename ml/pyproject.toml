@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "signbridge"
+version = "0.1.0"
+description = "SignBridge — NSL sign-language tutor: data, models, scoring, tutor logic"
+readme = "README.md"
+requires-python = ">=3.11"
+
+# The `foundation` extra is pure-Python and installs on any 3.11+ (including 3.14).
+# The vision/modelling stack (mediapipe, torch) currently needs Python 3.11 or 3.12.
+dependencies = [
+    "numpy>=1.24,<2.0",
+    "pydantic>=2.7",
+]
+
+[project.optional-dependencies]
+# Lightweight: transliteration, schema, vocabulary, scoring, scheduler + tests.
+foundation = [
+    "indic-transliteration>=2.3",
+    "nepali-datetime>=1.0",
+    "fastdtw>=0.3.4",
+    "fsrs>=4.0",
+    "pytest>=8.0",
+]
+# Full ML/vision stack — requires Python 3.11/3.12.
+full = [
+    "mediapipe==0.10.14",
+    "opencv-python==4.10.0.84",
+    "torch>=2.2",
+    "torchvision>=0.17",
+    "transformers>=4.40",
+    "onnx>=1.16",
+    "onnxruntime>=1.18",
+    "scikit-learn>=1.4",
+    "dtaidistance>=2.3",
+    "librosa>=0.10",
+    "soundfile>=0.12",
+    "datasets>=2.19",
+    "tqdm>=4.66",
+    "matplotlib>=3.8",
+]
+
+[tool.setuptools.packages.find]
+include = ["signbridge*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SignBridge Sign Dictionary Entry",
+  "description": "Language-neutral sign records. NEVER key signs by English words - retrofitting Nepali later becomes a rewrite.",
+
+  "definitions": {
+    "sign": {
+      "type": "object",
+      "required": ["sign_id", "labels", "gloss_code", "parameters"],
+      "properties": {
+        "sign_id": {
+          "type": "string",
+          "pattern": "^NSL_[0-9]{4}$",
+          "description": "Immutable, language-neutral. This is the only key used across models, clips, and agents."
+        },
+        "labels": {
+          "type": "object",
+          "required": ["en", "ne"],
+          "properties": {
+            "en": { "type": "string" },
+            "ne": { "type": "string", "description": "Devanagari" },
+            "ne_roman": { "type": "string", "description": "Romanized, for search and transliteration fallback" }
+          }
+        },
+        "gloss_code": {
+          "type": "string",
+          "description": "Uppercase symbolic gloss used by translation and animation agents"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Sign phonology - drives DTW error decomposition and learner feedback",
+          "required": ["handshape", "location", "movement", "orientation"],
+          "properties": {
+            "handshape": { "type": "string" },
+            "location": { "type": "string" },
+            "movement": { "type": "string" },
+            "orientation": { "type": "string" },
+            "two_handed": { "type": "boolean" },
+            "symmetric": { "type": "boolean" }
+          }
+        },
+        "non_manual_markers": {
+          "type": "object",
+          "description": "Facial grammar. Maps to ARKit blendshapes on the avatar.",
+          "properties": {
+            "eyebrows": { "enum": ["raised", "furrowed", "neutral"] },
+            "mouth_morpheme": { "type": "string" },
+            "head": { "enum": ["tilt_forward", "tilt_back", "shake", "nod", "neutral"] },
+            "eye_gaze": { "type": "string" }
+          }
+        },
+        "clip_ref": {
+          "type": "string",
+          "description": "Avatar animation clip - glTF path or R2 key"
+        },
+        "reference_landmarks": {
+          "type": "string",
+          "description": "Path to reference .npy sequence used as the DTW target"
+        },
+        "curriculum": {
+          "type": "object",
+          "properties": {
+            "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+            "prerequisites": { "type": "array", "items": { "type": "string" } },
+            "category": { "type": "string" },
+            "phase": { "type": "integer", "description": "Which build phase this sign lands in" }
+          }
+        },
+        "samples_collected": { "type": "integer" },
+        "signers_recorded": { "type": "integer", "description": "Track this - you need 5+ distinct signers per sign" },
+        "validated_by_native_signer": { "type": "boolean" }
+      }
+    }
+  },
+
+  "type": "object",
+  "properties": {
+    "version": { "type": "string" },
+    "sign_language": { "const": "NSL" },
+    "signs": { "type": "array", "items": { "$ref": "#/definitions/sign" } }
+  },
+
+  "examples": [
+    {
+      "version": "0.1.0",
+      "sign_language": "NSL",
+      "signs": [
+        {
+          "sign_id": "NSL_0001",
+          "labels": { "en": "hello", "ne": "नमस्ते", "ne_roman": "namaste" },
+          "gloss_code": "HELLO",
+          "parameters": {
+            "handshape": "flat_B",
+            "location": "chest_center",
+            "movement": "palms_together_static",
+            "orientation": "palm_inward",
+            "two_handed": true,
+            "symmetric": true
+          },
+          "non_manual_markers": {
+            "eyebrows": "neutral",
+            "mouth_morpheme": "closed_smile",
+            "head": "tilt_forward"
+          },
+          "clip_ref": "clips/nsl_0001.glb",
+          "reference_landmarks": "refs/nsl_0001.npy",
+          "curriculum": { "difficulty": 1, "prerequisites": [], "category": "greetings", "phase": 1 },
+          "samples_collected": 0,
+          "signers_recorded": 0,
+          "validated_by_native_signer": false
+        },
+        {
+          "sign_id": "NSL_0002",
+          "labels": { "en": "thank you", "ne": "धन्यवाद", "ne_roman": "dhanyabaad" },
+          "gloss_code": "THANK-YOU",
+          "parameters": {
+            "handshape": "flat_B",
+            "location": "chin",
+            "movement": "outward_arc",
+            "orientation": "palm_inward",
+            "two_handed": false,
+            "symmetric": false
+          },
+          "non_manual_markers": {
+            "eyebrows": "raised",
+            "mouth_morpheme": "closed_smile",
+            "head": "nod"
+          },
+          "clip_ref": "clips/nsl_0002.glb",
+          "reference_landmarks": "refs/nsl_0002.npy",
+          "curriculum": { "difficulty": 1, "prerequisites": [], "category": "greetings", "phase": 1 },
+          "samples_collected": 0,
+          "signers_recorded": 0,
+          "validated_by_native_signer": false
+        }
+      ]
+    }
+  ]
+}

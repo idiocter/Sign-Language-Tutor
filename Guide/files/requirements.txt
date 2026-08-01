@@ -1,0 +1,44 @@
+# --- Vision / capture -------------------------------------------------------
+# Pin mediapipe: the legacy solutions API (mp.solutions.holistic) used by
+# capture_tool.py was deprecated in later versions in favour of the Tasks API.
+# 0.10.14 still ships both. If you upgrade, port capture_tool.py to
+# mediapipe.tasks.python.vision.HolisticLandmarker.
+mediapipe==0.10.14
+opencv-python==4.10.0.84
+numpy>=1.24,<2.0
+
+# --- Modelling --------------------------------------------------------------
+torch>=2.2
+torchvision>=0.17
+transformers>=4.40
+onnx>=1.16
+onnxruntime>=1.18
+scikit-learn>=1.4
+
+# --- Sequence scoring -------------------------------------------------------
+dtaidistance>=2.3        # DTW for learner-vs-reference comparison
+fastdtw>=0.3.4           # lighter fallback
+
+# --- Spaced repetition ------------------------------------------------------
+fsrs>=4.0
+
+# --- Nepali language --------------------------------------------------------
+indic-transliteration>=2.3    # Roman -> Devanagari
+nepali-datetime>=1.0          # Bikram Sambat
+datasets>=2.19                # OpenSLR / Common Voice loading
+librosa>=0.10                 # audio preprocessing for ASR fine-tuning
+soundfile>=0.12
+
+# --- Backend ----------------------------------------------------------------
+fastapi>=0.110
+uvicorn[standard]>=0.29
+websockets>=12.0
+pydantic>=2.7
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+redis>=5.0
+
+# --- Utilities --------------------------------------------------------------
+python-dotenv>=1.0
+tqdm>=4.66
+matplotlib>=3.8

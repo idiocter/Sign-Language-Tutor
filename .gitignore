@@ -1,0 +1,41 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Data & models (large, collected/trained, never committed) ---
+ml/data/raw/
+ml/data/processed/
+ml/data/refs/*.npy
+models/mediapipe/*.task
+web/public/models/
+*.glb
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+.turbo/
+next-env.d.ts
+*.tsbuildinfo
+
+# --- Editors / OS ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
