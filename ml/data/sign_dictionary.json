@@ -1,0 +1,1926 @@
+{
+  "version": "0.1.0",
+  "sign_language": "NSL",
+  "signs": [
+    {
+      "sign_id": "NSL_0001",
+      "labels": {
+        "en": "hello",
+        "ne": "नमस्ते",
+        "ne_roman": "namaste"
+      },
+      "gloss_code": "HELLO",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "chest_center",
+        "movement": "palms_together_static",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0001.glb",
+      "reference_landmarks": "refs/nsl_0001.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0002",
+      "labels": {
+        "en": "thank you",
+        "ne": "धन्यवाद",
+        "ne_roman": "dhanyabaad"
+      },
+      "gloss_code": "THANK-YOU",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "chin",
+        "movement": "outward_arc",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "nod"
+      },
+      "clip_ref": "clips/nsl_0002.glb",
+      "reference_landmarks": "refs/nsl_0002.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0003",
+      "labels": {
+        "en": "sorry",
+        "ne": "माफ गर्नुहोस्",
+        "ne_roman": "maaf garnuhos"
+      },
+      "gloss_code": "SORRY",
+      "parameters": {
+        "handshape": "fist_A",
+        "location": "chest_center",
+        "movement": "circular",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "nod"
+      },
+      "clip_ref": "clips/nsl_0003.glb",
+      "reference_landmarks": "refs/nsl_0003.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0004",
+      "labels": {
+        "en": "please",
+        "ne": "कृपया",
+        "ne_roman": "kripaya"
+      },
+      "gloss_code": "PLEASE",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "chest_center",
+        "movement": "circular",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0004.glb",
+      "reference_landmarks": "refs/nsl_0004.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0005",
+      "labels": {
+        "en": "yes",
+        "ne": "हो",
+        "ne_roman": "ho"
+      },
+      "gloss_code": "YES",
+      "parameters": {
+        "handshape": "fist_A",
+        "location": "head_side",
+        "movement": "nod_repeated",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "nod"
+      },
+      "clip_ref": "clips/nsl_0005.glb",
+      "reference_landmarks": "refs/nsl_0005.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0006",
+      "labels": {
+        "en": "no",
+        "ne": "होइन",
+        "ne_roman": "hoina"
+      },
+      "gloss_code": "NO",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "side_to_side",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "shake"
+      },
+      "clip_ref": "clips/nsl_0006.glb",
+      "reference_landmarks": "refs/nsl_0006.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0007",
+      "labels": {
+        "en": "good",
+        "ne": "राम्रो",
+        "ne_roman": "ramro"
+      },
+      "gloss_code": "GOOD",
+      "parameters": {
+        "handshape": "thumb_up",
+        "location": "chin",
+        "movement": "outward",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "nod"
+      },
+      "clip_ref": "clips/nsl_0007.glb",
+      "reference_landmarks": "refs/nsl_0007.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0008",
+      "labels": {
+        "en": "bad",
+        "ne": "नराम्रो",
+        "ne_roman": "naramro"
+      },
+      "gloss_code": "BAD",
+      "parameters": {
+        "handshape": "thumb_down",
+        "location": "chin",
+        "movement": "downward",
+        "orientation": "palm_down",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "shake"
+      },
+      "clip_ref": "clips/nsl_0008.glb",
+      "reference_landmarks": "refs/nsl_0008.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0009",
+      "labels": {
+        "en": "name",
+        "ne": "नाम",
+        "ne_roman": "naam"
+      },
+      "gloss_code": "NAME",
+      "parameters": {
+        "handshape": "index_U",
+        "location": "neutral_space",
+        "movement": "tap_twice",
+        "orientation": "palm_down",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0009.glb",
+      "reference_landmarks": "refs/nsl_0009.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0010",
+      "labels": {
+        "en": "goodbye",
+        "ne": "बिदा",
+        "ne_roman": "bidaa"
+      },
+      "gloss_code": "GOODBYE",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "head_side",
+        "movement": "wave",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0010.glb",
+      "reference_landmarks": "refs/nsl_0010.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "greetings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0011",
+      "labels": {
+        "en": "I",
+        "ne": "म",
+        "ne_roman": "ma"
+      },
+      "gloss_code": "ME",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "chest_center",
+        "movement": "point_self",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0011.glb",
+      "reference_landmarks": "refs/nsl_0011.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "pronouns",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0012",
+      "labels": {
+        "en": "you",
+        "ne": "तिमी",
+        "ne_roman": "timi"
+      },
+      "gloss_code": "YOU",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "point_forward",
+        "orientation": "palm_up",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0012.glb",
+      "reference_landmarks": "refs/nsl_0012.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "pronouns",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0013",
+      "labels": {
+        "en": "he/she",
+        "ne": "उहाँ",
+        "ne_roman": "uhaa"
+      },
+      "gloss_code": "THIRD-PERSON",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "point_side",
+        "orientation": "palm_up",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0013.glb",
+      "reference_landmarks": "refs/nsl_0013.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "pronouns",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0014",
+      "labels": {
+        "en": "we",
+        "ne": "हामी",
+        "ne_roman": "haami"
+      },
+      "gloss_code": "WE",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "chest_center",
+        "movement": "sweep_arc",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0014.glb",
+      "reference_landmarks": "refs/nsl_0014.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "pronouns",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0015",
+      "labels": {
+        "en": "mother",
+        "ne": "आमा",
+        "ne_roman": "aamaa"
+      },
+      "gloss_code": "MOTHER",
+      "parameters": {
+        "handshape": "flat_5",
+        "location": "chin",
+        "movement": "tap_twice",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0015.glb",
+      "reference_landmarks": "refs/nsl_0015.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "family",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0016",
+      "labels": {
+        "en": "father",
+        "ne": "बुबा",
+        "ne_roman": "bubaa"
+      },
+      "gloss_code": "FATHER",
+      "parameters": {
+        "handshape": "flat_5",
+        "location": "forehead",
+        "movement": "tap_twice",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0016.glb",
+      "reference_landmarks": "refs/nsl_0016.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "family",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0017",
+      "labels": {
+        "en": "brother",
+        "ne": "दाइ",
+        "ne_roman": "daai"
+      },
+      "gloss_code": "BROTHER",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "forehead",
+        "movement": "downward",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0017.glb",
+      "reference_landmarks": "refs/nsl_0017.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "family",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0018",
+      "labels": {
+        "en": "sister",
+        "ne": "दिदी",
+        "ne_roman": "didi"
+      },
+      "gloss_code": "SISTER",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "chin",
+        "movement": "downward",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0018.glb",
+      "reference_landmarks": "refs/nsl_0018.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "family",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0019",
+      "labels": {
+        "en": "family",
+        "ne": "परिवार",
+        "ne_roman": "pariwaar"
+      },
+      "gloss_code": "FAMILY",
+      "parameters": {
+        "handshape": "flat_F",
+        "location": "neutral_space",
+        "movement": "circle_outward",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0019.glb",
+      "reference_landmarks": "refs/nsl_0019.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "family",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0020",
+      "labels": {
+        "en": "friend",
+        "ne": "साथी",
+        "ne_roman": "saathi"
+      },
+      "gloss_code": "FRIEND",
+      "parameters": {
+        "handshape": "index_hook",
+        "location": "neutral_space",
+        "movement": "interlock",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0020.glb",
+      "reference_landmarks": "refs/nsl_0020.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "family",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0021",
+      "labels": {
+        "en": "one",
+        "ne": "एक",
+        "ne_roman": "ek"
+      },
+      "gloss_code": "NUM-1",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0021.glb",
+      "reference_landmarks": "refs/nsl_0021.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0022",
+      "labels": {
+        "en": "two",
+        "ne": "दुई",
+        "ne_roman": "dui"
+      },
+      "gloss_code": "NUM-2",
+      "parameters": {
+        "handshape": "index_V",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0022.glb",
+      "reference_landmarks": "refs/nsl_0022.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0023",
+      "labels": {
+        "en": "three",
+        "ne": "तीन",
+        "ne_roman": "teen"
+      },
+      "gloss_code": "NUM-3",
+      "parameters": {
+        "handshape": "hand_3",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0023.glb",
+      "reference_landmarks": "refs/nsl_0023.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0024",
+      "labels": {
+        "en": "four",
+        "ne": "चार",
+        "ne_roman": "chaar"
+      },
+      "gloss_code": "NUM-4",
+      "parameters": {
+        "handshape": "hand_4",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0024.glb",
+      "reference_landmarks": "refs/nsl_0024.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0025",
+      "labels": {
+        "en": "five",
+        "ne": "पाँच",
+        "ne_roman": "paanch"
+      },
+      "gloss_code": "NUM-5",
+      "parameters": {
+        "handshape": "flat_5",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0025.glb",
+      "reference_landmarks": "refs/nsl_0025.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0026",
+      "labels": {
+        "en": "six",
+        "ne": "छ",
+        "ne_roman": "chha"
+      },
+      "gloss_code": "NUM-6",
+      "parameters": {
+        "handshape": "hand_6",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0026.glb",
+      "reference_landmarks": "refs/nsl_0026.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0027",
+      "labels": {
+        "en": "seven",
+        "ne": "सात",
+        "ne_roman": "saat"
+      },
+      "gloss_code": "NUM-7",
+      "parameters": {
+        "handshape": "hand_7",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0027.glb",
+      "reference_landmarks": "refs/nsl_0027.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0028",
+      "labels": {
+        "en": "eight",
+        "ne": "आठ",
+        "ne_roman": "aath"
+      },
+      "gloss_code": "NUM-8",
+      "parameters": {
+        "handshape": "hand_8",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0028.glb",
+      "reference_landmarks": "refs/nsl_0028.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0029",
+      "labels": {
+        "en": "nine",
+        "ne": "नौ",
+        "ne_roman": "nau"
+      },
+      "gloss_code": "NUM-9",
+      "parameters": {
+        "handshape": "hand_9",
+        "location": "neutral_space",
+        "movement": "static",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0029.glb",
+      "reference_landmarks": "refs/nsl_0029.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0030",
+      "labels": {
+        "en": "ten",
+        "ne": "दश",
+        "ne_roman": "dash"
+      },
+      "gloss_code": "NUM-10",
+      "parameters": {
+        "handshape": "fist_A",
+        "location": "neutral_space",
+        "movement": "twist",
+        "orientation": "palm_up",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0030.glb",
+      "reference_landmarks": "refs/nsl_0030.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "numbers",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0031",
+      "labels": {
+        "en": "what",
+        "ne": "के",
+        "ne_roman": "ke"
+      },
+      "gloss_code": "WHAT",
+      "parameters": {
+        "handshape": "flat_5",
+        "location": "neutral_space",
+        "movement": "side_to_side",
+        "orientation": "palm_up",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0031.glb",
+      "reference_landmarks": "refs/nsl_0031.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "questions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0032",
+      "labels": {
+        "en": "where",
+        "ne": "कहाँ",
+        "ne_roman": "kahaa"
+      },
+      "gloss_code": "WHERE",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "side_to_side",
+        "orientation": "palm_up",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0032.glb",
+      "reference_landmarks": "refs/nsl_0032.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "questions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0033",
+      "labels": {
+        "en": "who",
+        "ne": "को",
+        "ne_roman": "ko"
+      },
+      "gloss_code": "WHO",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "chin",
+        "movement": "circle_small",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0033.glb",
+      "reference_landmarks": "refs/nsl_0033.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "questions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0034",
+      "labels": {
+        "en": "when",
+        "ne": "कहिले",
+        "ne_roman": "kahile"
+      },
+      "gloss_code": "WHEN",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "circle_around",
+        "orientation": "palm_down",
+        "two_handed": true,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0034.glb",
+      "reference_landmarks": "refs/nsl_0034.npy",
+      "curriculum": {
+        "difficulty": 3,
+        "prerequisites": [],
+        "category": "questions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0035",
+      "labels": {
+        "en": "why",
+        "ne": "किन",
+        "ne_roman": "kina"
+      },
+      "gloss_code": "WHY",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "forehead",
+        "movement": "outward_flick",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0035.glb",
+      "reference_landmarks": "refs/nsl_0035.npy",
+      "curriculum": {
+        "difficulty": 3,
+        "prerequisites": [],
+        "category": "questions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0036",
+      "labels": {
+        "en": "how",
+        "ne": "कसरी",
+        "ne_roman": "kasari"
+      },
+      "gloss_code": "HOW",
+      "parameters": {
+        "handshape": "curved_C",
+        "location": "neutral_space",
+        "movement": "rotate_up",
+        "orientation": "palm_up",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0036.glb",
+      "reference_landmarks": "refs/nsl_0036.npy",
+      "curriculum": {
+        "difficulty": 3,
+        "prerequisites": [],
+        "category": "questions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0037",
+      "labels": {
+        "en": "eat",
+        "ne": "खानु",
+        "ne_roman": "khaanu"
+      },
+      "gloss_code": "EAT",
+      "parameters": {
+        "handshape": "flat_O",
+        "location": "mouth",
+        "movement": "tap_repeated",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0037.glb",
+      "reference_landmarks": "refs/nsl_0037.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0038",
+      "labels": {
+        "en": "drink",
+        "ne": "पिउनु",
+        "ne_roman": "piunu"
+      },
+      "gloss_code": "DRINK",
+      "parameters": {
+        "handshape": "curved_C",
+        "location": "mouth",
+        "movement": "tilt_up",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0038.glb",
+      "reference_landmarks": "refs/nsl_0038.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0039",
+      "labels": {
+        "en": "water",
+        "ne": "पानी",
+        "ne_roman": "paani"
+      },
+      "gloss_code": "WATER",
+      "parameters": {
+        "handshape": "hand_W",
+        "location": "chin",
+        "movement": "tap_twice",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0039.glb",
+      "reference_landmarks": "refs/nsl_0039.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "food_drink",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0040",
+      "labels": {
+        "en": "food",
+        "ne": "खाना",
+        "ne_roman": "khaanaa"
+      },
+      "gloss_code": "FOOD",
+      "parameters": {
+        "handshape": "flat_O",
+        "location": "mouth",
+        "movement": "circle_small",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0040.glb",
+      "reference_landmarks": "refs/nsl_0040.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "food_drink",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0041",
+      "labels": {
+        "en": "rice",
+        "ne": "भात",
+        "ne_roman": "bhaat"
+      },
+      "gloss_code": "RICE",
+      "parameters": {
+        "handshape": "flat_O",
+        "location": "mouth",
+        "movement": "scoop_up",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0041.glb",
+      "reference_landmarks": "refs/nsl_0041.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "food_drink",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0042",
+      "labels": {
+        "en": "milk",
+        "ne": "दूध",
+        "ne_roman": "dudh"
+      },
+      "gloss_code": "MILK",
+      "parameters": {
+        "handshape": "fist_S",
+        "location": "neutral_space",
+        "movement": "squeeze_repeated",
+        "orientation": "palm_side",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0042.glb",
+      "reference_landmarks": "refs/nsl_0042.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "food_drink",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0043",
+      "labels": {
+        "en": "sleep",
+        "ne": "सुत्नु",
+        "ne_roman": "sutnu"
+      },
+      "gloss_code": "SLEEP",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "head_side",
+        "movement": "tilt_rest",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0043.glb",
+      "reference_landmarks": "refs/nsl_0043.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0044",
+      "labels": {
+        "en": "go",
+        "ne": "जानु",
+        "ne_roman": "jaanu"
+      },
+      "gloss_code": "GO",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "move_forward",
+        "orientation": "palm_forward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0044.glb",
+      "reference_landmarks": "refs/nsl_0044.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0045",
+      "labels": {
+        "en": "come",
+        "ne": "आउनु",
+        "ne_roman": "aaunu"
+      },
+      "gloss_code": "COME",
+      "parameters": {
+        "handshape": "index_D",
+        "location": "neutral_space",
+        "movement": "draw_inward",
+        "orientation": "palm_up",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0045.glb",
+      "reference_landmarks": "refs/nsl_0045.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0046",
+      "labels": {
+        "en": "work",
+        "ne": "काम",
+        "ne_roman": "kaam"
+      },
+      "gloss_code": "WORK",
+      "parameters": {
+        "handshape": "fist_S",
+        "location": "neutral_space",
+        "movement": "tap_wrists",
+        "orientation": "palm_down",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0046.glb",
+      "reference_landmarks": "refs/nsl_0046.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0047",
+      "labels": {
+        "en": "study",
+        "ne": "पढ्नु",
+        "ne_roman": "padhnu"
+      },
+      "gloss_code": "STUDY",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "open_palm",
+        "movement": "point_scan",
+        "orientation": "palm_up",
+        "two_handed": true,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0047.glb",
+      "reference_landmarks": "refs/nsl_0047.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0048",
+      "labels": {
+        "en": "home",
+        "ne": "घर",
+        "ne_roman": "ghar"
+      },
+      "gloss_code": "HOME",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "neutral_space",
+        "movement": "roof_shape",
+        "orientation": "palm_down",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0048.glb",
+      "reference_landmarks": "refs/nsl_0048.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "places",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0049",
+      "labels": {
+        "en": "school",
+        "ne": "विद्यालय",
+        "ne_roman": "vidyaalaya"
+      },
+      "gloss_code": "SCHOOL",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "neutral_space",
+        "movement": "clap_twice",
+        "orientation": "palm_down",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0049.glb",
+      "reference_landmarks": "refs/nsl_0049.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "places",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0050",
+      "labels": {
+        "en": "help",
+        "ne": "मद्दत",
+        "ne_roman": "maddat"
+      },
+      "gloss_code": "HELP",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "neutral_space",
+        "movement": "lift_up",
+        "orientation": "palm_up",
+        "two_handed": true,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0050.glb",
+      "reference_landmarks": "refs/nsl_0050.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "daily_verbs",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0051",
+      "labels": {
+        "en": "love",
+        "ne": "माया",
+        "ne_roman": "maayaa"
+      },
+      "gloss_code": "LOVE",
+      "parameters": {
+        "handshape": "fist_S",
+        "location": "chest_center",
+        "movement": "cross_arms",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0051.glb",
+      "reference_landmarks": "refs/nsl_0051.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "feelings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0052",
+      "labels": {
+        "en": "happy",
+        "ne": "खुसी",
+        "ne_roman": "khusi"
+      },
+      "gloss_code": "HAPPY",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "chest_center",
+        "movement": "brush_up",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "nod"
+      },
+      "clip_ref": "clips/nsl_0052.glb",
+      "reference_landmarks": "refs/nsl_0052.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "feelings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0053",
+      "labels": {
+        "en": "sad",
+        "ne": "दुःखी",
+        "ne_roman": "dukhi"
+      },
+      "gloss_code": "SAD",
+      "parameters": {
+        "handshape": "flat_5",
+        "location": "face",
+        "movement": "slide_down",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0053.glb",
+      "reference_landmarks": "refs/nsl_0053.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "feelings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0054",
+      "labels": {
+        "en": "angry",
+        "ne": "रिसाएको",
+        "ne_roman": "risaaeko"
+      },
+      "gloss_code": "ANGRY",
+      "parameters": {
+        "handshape": "claw_5",
+        "location": "chest_center",
+        "movement": "pull_up",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0054.glb",
+      "reference_landmarks": "refs/nsl_0054.npy",
+      "curriculum": {
+        "difficulty": 3,
+        "prerequisites": [],
+        "category": "feelings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0055",
+      "labels": {
+        "en": "tired",
+        "ne": "थकित",
+        "ne_roman": "thakit"
+      },
+      "gloss_code": "TIRED",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "chest_center",
+        "movement": "droop_down",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "tilt_forward"
+      },
+      "clip_ref": "clips/nsl_0055.glb",
+      "reference_landmarks": "refs/nsl_0055.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "feelings",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0056",
+      "labels": {
+        "en": "hot",
+        "ne": "तातो",
+        "ne_roman": "taato"
+      },
+      "gloss_code": "HOT",
+      "parameters": {
+        "handshape": "claw_C",
+        "location": "mouth",
+        "movement": "twist_away",
+        "orientation": "palm_inward",
+        "two_handed": false,
+        "symmetric": false
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0056.glb",
+      "reference_landmarks": "refs/nsl_0056.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "descriptions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0057",
+      "labels": {
+        "en": "cold",
+        "ne": "चिसो",
+        "ne_roman": "chiso"
+      },
+      "gloss_code": "COLD",
+      "parameters": {
+        "handshape": "fist_S",
+        "location": "chest_center",
+        "movement": "shiver",
+        "orientation": "palm_inward",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "furrowed",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0057.glb",
+      "reference_landmarks": "refs/nsl_0057.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "descriptions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0058",
+      "labels": {
+        "en": "big",
+        "ne": "ठूलो",
+        "ne_roman": "thulo"
+      },
+      "gloss_code": "BIG",
+      "parameters": {
+        "handshape": "curved_L",
+        "location": "neutral_space",
+        "movement": "expand_apart",
+        "orientation": "palm_facing",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "raised",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0058.glb",
+      "reference_landmarks": "refs/nsl_0058.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "descriptions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0059",
+      "labels": {
+        "en": "small",
+        "ne": "सानो",
+        "ne_roman": "saano"
+      },
+      "gloss_code": "SMALL",
+      "parameters": {
+        "handshape": "pinch_G",
+        "location": "neutral_space",
+        "movement": "narrow_together",
+        "orientation": "palm_facing",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0059.glb",
+      "reference_landmarks": "refs/nsl_0059.npy",
+      "curriculum": {
+        "difficulty": 1,
+        "prerequisites": [],
+        "category": "descriptions",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    },
+    {
+      "sign_id": "NSL_0060",
+      "labels": {
+        "en": "today",
+        "ne": "आज",
+        "ne_roman": "aaja"
+      },
+      "gloss_code": "TODAY",
+      "parameters": {
+        "handshape": "flat_B",
+        "location": "neutral_space",
+        "movement": "press_down",
+        "orientation": "palm_down",
+        "two_handed": true,
+        "symmetric": true
+      },
+      "non_manual_markers": {
+        "eyebrows": "neutral",
+        "head": "neutral"
+      },
+      "clip_ref": "clips/nsl_0060.glb",
+      "reference_landmarks": "refs/nsl_0060.npy",
+      "curriculum": {
+        "difficulty": 2,
+        "prerequisites": [],
+        "category": "time",
+        "phase": 1
+      },
+      "samples_collected": 0,
+      "signers_recorded": 0,
+      "validated_by_native_signer": false
+    }
+  ]
+}

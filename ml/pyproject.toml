@@ -11,8 +11,10 @@ requires-python = ">=3.11"
 
 # The `foundation` extra is pure-Python and installs on any 3.11+ (including 3.14).
 # The vision/modelling stack (mediapipe, torch) currently needs Python 3.11 or 3.12.
+# numpy is unpinned here so the foundation installs on modern Python (incl. 3.14).
+# The vision stack pins numpy<2.0 in the `full` extra (mediapipe 0.10.14 needs it).
 dependencies = [
-    "numpy>=1.24,<2.0",
+    "numpy>=1.24",
     "pydantic>=2.7",
 ]
 
@@ -27,6 +29,7 @@ foundation = [
 ]
 # Full ML/vision stack — requires Python 3.11/3.12.
 full = [
+    "numpy<2.0",
     "mediapipe==0.10.14",
     "opencv-python==4.10.0.84",
     "torch>=2.2",
