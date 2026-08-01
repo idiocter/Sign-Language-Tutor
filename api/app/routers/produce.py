@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from signbridge.agents.animation import AnimationDirectorAgent
@@ -86,6 +86,37 @@ def produce(payload: ProduceIn) -> ProduceOut:
     return ProduceOut(
         gloss=gloss.gloss_string(),
         sentence_nmm=gloss.sentence_nmm,
+        total_ms=plan.total_ms,
+        has_facial_motion=plan.has_facial_motion(),
+        steps=steps,
+    )
+
+
+@router.get("/produce/sign", response_model=ProduceOut)
+def produce_sign(sign_id: str) -> ProduceOut:
+    """Animation plan for a single sign — used by the tutor to show the avatar signing it."""
+    d = _dictionary()
+    try:
+        d.by_id(sign_id)
+    except KeyError:
+        raise HTTPException(404, f"unknown sign_id: {sign_id}")
+    plan = AnimationDirectorAgent(d).run([sign_id], AgentContext())
+    steps = [
+        StepOut(
+            sign_id=s.sign_id,
+            gloss=s.gloss,
+            clip_ref=s.clip_ref if _clip_available(s.clip_ref) else None,
+            start_ms=s.start_ms,
+            duration_ms=s.duration_ms,
+            crossfade_ms=s.crossfade_ms,
+            pose=s.pose,
+            facial=s.facial,
+        )
+        for s in plan.steps
+    ]
+    return ProduceOut(
+        gloss=steps[0].gloss if steps else "",
+        sentence_nmm={},
         total_ms=plan.total_ms,
         has_facial_motion=plan.has_facial_motion(),
         steps=steps,

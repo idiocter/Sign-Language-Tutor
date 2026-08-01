@@ -43,6 +43,7 @@ class ReviewState(Base):
     reps: Mapped[int] = mapped_column(Integer, default=0)
     lapses: Mapped[int] = mapped_column(Integer, default=0)
     state: Mapped[str] = mapped_column(String(16), default="new")
+    last_review: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     learner: Mapped[Learner] = relationship(back_populates="reviews")
 

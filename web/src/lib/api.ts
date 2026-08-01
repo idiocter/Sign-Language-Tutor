@@ -101,6 +101,55 @@ export interface ProducePlan {
   steps: AnimationStep[];
 }
 
+export interface LearnerState {
+  id: number;
+  display_name: string;
+  language: string;
+  mastery: Record<string, number>;
+  signs_started: number;
+  signs_mastered: number;
+  due_count: number;
+  streak: number;
+  today_bs: string;
+}
+
+export interface Lesson {
+  review: string[];
+  new: string[];
+  difficulty: number;
+}
+
+export async function createLearner(language: string): Promise<LearnerState> {
+  const res = await fetch(`${API_BASE}/tutor/learner`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ display_name: "Learner", language }),
+  });
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json() as Promise<LearnerState>;
+}
+
+export function getLearner(id: number): Promise<LearnerState> {
+  return getJSON<LearnerState>(`/tutor/learner/${id}`);
+}
+
+export function getLearnerLesson(id: number, size = 8): Promise<Lesson> {
+  return getJSON<Lesson>(`/tutor/learner/${id}/lesson?size=${size}`);
+}
+
+export async function submitReview(id: number, signId: string, rating: number): Promise<void> {
+  const res = await fetch(`${API_BASE}/tutor/learner/${id}/review`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sign_id: signId, rating }),
+  });
+  if (!res.ok) throw new Error(`${res.status}`);
+}
+
+export function produceSign(signId: string): Promise<ProducePlan> {
+  return getJSON<ProducePlan>(`/produce/sign?sign_id=${encodeURIComponent(signId)}`);
+}
+
 export async function produce(text: string, language: string): Promise<ProducePlan> {
   const res = await fetch(`${API_BASE}/produce`, {
     method: "POST",

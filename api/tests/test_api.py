@@ -105,6 +105,42 @@ def test_produce_falls_back_to_procedural_when_no_glb():
     assert all(s["clip_ref"] is None for s in r.json()["steps"])
 
 
+def test_tutor_loop_end_to_end():
+    # create a learner
+    r = client.post("/tutor/learner", json={"display_name": "Test", "language": "en"})
+    assert r.status_code == 200
+    lid = r.json()["id"]
+    assert r.json()["signs_started"] == 0
+
+    # first lesson: all new signs
+    lesson = client.get(f"/tutor/learner/{lid}/lesson", params={"size": 5}).json()
+    assert lesson["new"] and not lesson["review"]
+
+    # study a sign -> Good
+    sign_id = lesson["new"][0]
+    rev = client.post(f"/tutor/learner/{lid}/review", json={"sign_id": sign_id, "rating": 3})
+    assert rev.status_code == 200
+    assert rev.json()["reps"] == 1
+    assert rev.json()["state"] in {"learning", "review"}  # new -> learning on first review
+
+    # state reflects the studied sign
+    state = client.get(f"/tutor/learner/{lid}").json()
+    assert state["signs_started"] == 1
+    assert sign_id in state["mastery"]
+    assert "today_bs" in state
+
+
+def test_tutor_unknown_learner_404():
+    assert client.get("/tutor/learner/999999").status_code == 404
+
+
+def test_produce_single_sign():
+    r = client.get("/produce/sign", params={"sign_id": "NSL_0001"})
+    assert r.status_code == 200
+    assert len(r.json()["steps"]) == 1
+    assert client.get("/produce/sign", params={"sign_id": "NSL_9999"}).status_code == 404
+
+
 def test_fingerspell_status():
     r = client.get("/inference/fingerspell/status")
     assert r.status_code == 200 and "ready" in r.json()

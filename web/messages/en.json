@@ -5,10 +5,32 @@
   },
   "nav": {
     "home": "Home",
+    "tutor": "Learn",
     "learn": "Dictionary",
     "practice": "Practice",
     "produce": "Sign it",
     "language": "Language"
+  },
+  "tutor": {
+    "title": "Learn NSL",
+    "subtitle": "Spaced-repetition lessons — the avatar signs, you rate how well you knew it.",
+    "streak": "Streak",
+    "mastered": "Mastered",
+    "due": "Due",
+    "todayBs": "Today: {date}",
+    "ready": "Ready for a lesson? Each session mixes due reviews with new signs.",
+    "start": "Start lesson",
+    "again2": "Next lesson",
+    "sessionDone": "Lesson complete! Your reviews are scheduled.",
+    "card": "Card {n} of {total}",
+    "rate": "How well did you know this sign?",
+    "ratings": {
+      "again": "Again",
+      "hard": "Hard",
+      "good": "Good",
+      "easy": "Easy"
+    },
+    "error": "Could not reach the tutor. Is the backend running?"
   },
   "produce_page": {
     "title": "Text to sign",

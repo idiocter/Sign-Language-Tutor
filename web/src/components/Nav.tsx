@@ -15,6 +15,9 @@ export default function Nav() {
         <Link href="/" className="text-white/80 hover:text-white">
           {t("home")}
         </Link>
+        <Link href="/tutor" className="text-white/80 hover:text-white">
+          {t("tutor")}
+        </Link>
         <Link href="/learn" className="text-white/80 hover:text-white">
           {t("learn")}
         </Link>
