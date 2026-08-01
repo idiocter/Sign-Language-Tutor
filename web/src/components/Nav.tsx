@@ -27,6 +27,9 @@ export default function Nav() {
         <Link href="/produce" className="text-white/80 hover:text-white">
           {t("produce")}
         </Link>
+        <Link href="/interpret" className="text-white/80 hover:text-white">
+          {t("interpret")}
+        </Link>
         <LocaleSwitcher />
       </nav>
     </header>

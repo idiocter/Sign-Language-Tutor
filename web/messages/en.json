@@ -9,7 +9,24 @@
     "learn": "Dictionary",
     "practice": "Practice",
     "produce": "Sign it",
+    "interpret": "Interpret",
     "language": "Language"
+  },
+  "interpret": {
+    "title": "Interpreter",
+    "subtitle": "Two-way, constrained-domain interpretation between NSL and English / Nepali.",
+    "text2sign": "Text / speech → Sign",
+    "sign2text": "Sign → Text / speech",
+    "toSign": "Sign it",
+    "toText": "Interpret to text",
+    "speak": "Speak",
+    "listening": "Listening…",
+    "speakText": "Speak",
+    "avatarLabel": "Signing avatar",
+    "pickHint": "Add recognized signs to the sequence, then interpret them to text (and speak it).",
+    "empty": "No signs yet — tap signs below.",
+    "clear": "Clear",
+    "scopeNote": "Constrained-domain interim: speech in/out uses the browser's Web Speech API (Nepali support varies), and Sign→Text assembles recognized signs. Text is always available as a fallback. A fine-tuned Nepali ASR/TTS and continuous recognition are future work."
   },
   "tutor": {
     "title": "Learn NSL",

@@ -134,6 +134,24 @@ def test_tutor_unknown_learner_404():
     assert client.get("/tutor/learner/999999").status_code == 404
 
 
+def test_interpret_sign_to_text():
+    r = client.post(
+        "/interpret/sign-to-text",
+        json={"sign_ids": ["NSL_0001", "NSL_0002"], "language": "ne"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["gloss"] == "HELLO THANK-YOU"
+    assert body["text"] == body["text_ne"] and body["text_ne"]
+    assert body["text_en"]  # both languages returned regardless of requested one
+
+
+def test_interpret_skips_unknown_signs():
+    r = client.post("/interpret/sign-to-text", json={"sign_ids": ["NSL_0001", "NSL_9999"]})
+    assert r.status_code == 200
+    assert r.json()["unknown"] == ["NSL_9999"]
+
+
 def test_produce_single_sign():
     r = client.get("/produce/sign", params={"sign_id": "NSL_0001"})
     assert r.status_code == 200

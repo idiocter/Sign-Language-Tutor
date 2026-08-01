@@ -150,6 +150,24 @@ export function produceSign(signId: string): Promise<ProducePlan> {
   return getJSON<ProducePlan>(`/produce/sign?sign_id=${encodeURIComponent(signId)}`);
 }
 
+export interface SignToText {
+  gloss: string;
+  text: string;
+  text_en: string;
+  text_ne: string;
+  unknown: string[];
+}
+
+export async function signToText(signIds: string[], language: string): Promise<SignToText> {
+  const res = await fetch(`${API_BASE}/interpret/sign-to-text`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sign_ids: signIds, language }),
+  });
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json() as Promise<SignToText>;
+}
+
 export async function produce(text: string, language: string): Promise<ProducePlan> {
   const res = await fetch(`${API_BASE}/produce`, {
     method: "POST",
