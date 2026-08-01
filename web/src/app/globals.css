@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0b1020;
+  --foreground: #e8ecf6;
+  --accent: #5b8cff;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, "Noto Sans Devanagari", sans-serif;
+}
+
+/* Devanagari renders comfortably at a slightly larger size. */
+:lang(ne) {
+  line-height: 1.7;
+}

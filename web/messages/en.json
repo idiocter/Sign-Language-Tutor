@@ -1,0 +1,51 @@
+{
+  "app": {
+    "name": "SignBridge",
+    "tagline": "Learn Nepali Sign Language with an animated tutor"
+  },
+  "nav": {
+    "home": "Home",
+    "learn": "Dictionary",
+    "practice": "Practice",
+    "language": "Language"
+  },
+  "home": {
+    "title": "Welcome to SignBridge",
+    "subtitle": "A bilingual tutor and interpreter for Nepali Sign Language.",
+    "startPractice": "Start practicing",
+    "browseDictionary": "Browse the dictionary",
+    "phaseNote": "This is an early build. Recognition and the avatar clips are still being trained and authored.",
+    "cards": {
+      "recognize": "Recognize signs from your webcam",
+      "recognizeBody": "MediaPipe reads your hands and face on-device — video never leaves your computer.",
+      "avatar": "Watch the avatar sign",
+      "avatarBody": "A 3D avatar produces each sign with the facial grammar that carries meaning.",
+      "tutor": "Practice with spaced repetition",
+      "tutorBody": "Get specific, joint-level feedback and reviews scheduled the day you need them."
+    }
+  },
+  "learn": {
+    "title": "Sign dictionary",
+    "search": "Search signs…",
+    "empty": "No signs match your search.",
+    "difficulty": "Difficulty",
+    "category": "Category",
+    "loading": "Loading signs…",
+    "error": "Could not reach the API. Is the backend running on port 8000?"
+  },
+  "practice": {
+    "title": "Practice",
+    "targetSign": "Target sign",
+    "startCamera": "Start camera",
+    "stopCamera": "Stop camera",
+    "cameraHint": "Allow camera access to begin. Everything is processed on your device.",
+    "avatarLabel": "Reference avatar",
+    "recognizerLabel": "Your camera",
+    "modelMissing": "MediaPipe models not found. Download them into public/models/mediapipe (see DOWNLOADS.md).",
+    "notReady": "Recognition model is not trained yet — this shows detected landmarks only."
+  },
+  "language": {
+    "en": "English",
+    "ne": "नेपाली"
+  }
+}

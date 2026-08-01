@@ -1,0 +1,35 @@
+{
+  "name": "signbridge-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.20",
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.0",
+    "nepali-date-converter": "^3.3.4",
+    "next": "^15.5.22",
+    "next-intl": "^3.26.3",
+    "onnxruntime-web": "^1.20.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "three": "^0.172.0",
+    "ts-fsrs": "^4.7.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/three": "^0.172.0",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3"
+  }
+}
