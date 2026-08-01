@@ -54,8 +54,10 @@ export function movementOffset(
 export interface PoseFrame {
   right: Vec3;
   rightCurl: number;
+  rightShape: string;
   left: Vec3 | null;
   leftCurl: number;
+  leftShape: string;
   brow: { up: number; down: number };
   jawOpen: number;
   smile: number;
@@ -125,8 +127,10 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
   return {
     right,
     rightCurl: step.pose?.right_hand.curl ?? 0.2,
+    rightShape: step.pose?.right_hand.handshape ?? "",
     left,
     leftCurl: step.pose?.left_hand?.curl ?? 0.2,
+    leftShape: step.pose?.left_hand?.handshape ?? "",
     brow: fac.brow,
     jawOpen: fac.jawOpen,
     smile: fac.smile,

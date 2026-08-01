@@ -11,6 +11,18 @@ author one clip per sign in Blender and the player blends transitions.
 > head-motion tracks with ARKit blendshapes, and validate intelligibility with deaf
 > advisors (target ≥4/5 on 20 signs).
 
+## 0. The avatar today vs. a photoreal character
+
+The web avatar (`web/src/components/SigningAvatar.tsx`) is now a **full articulated
+humanoid** — head, torso, hips, legs, two arms driven by 2-bone IK, and five-fingered hands
+that curl per handshape — but it is still procedural geometry (capsules), not a skinned
+character. Two upgrade paths, both using the existing pose/facial data:
+
+- **Realistic body:** drop a rigged glTF character (Ready Player Me / Mixamo) into
+  `web/public/avatar/character.glb` and retarget: map the IK wrist targets to the model's
+  hand bones and the finger curls to its finger bones. Same `sample()` data drives it.
+- **Per-sign motion capture:** author one clip per sign (below) for exact, validated signing.
+
 ## 1. Character + rig (once)
 
 1. Get a rigged humanoid with **ARKit 52 face blendshapes**:
