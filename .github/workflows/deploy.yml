@@ -1,0 +1,86 @@
+name: Deploy
+
+# Runs after CI succeeds on main (or manually). Each job skips cleanly if its deploy
+# secrets aren't configured yet, so this never turns a normal push red.
+#
+# Required repo secrets to actually deploy:
+#   API  (Fly.io):  FLY_API_TOKEN
+#   web  (Vercel):  VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# See docs/deploy.md.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  deploy-api:
+    name: Deploy API → Fly.io
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check secret
+        id: guard
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "::notice::FLY_API_TOKEN not set — skipping API deploy."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Generate model artifacts (baked into the image)
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          pip install -e "ml[foundation]"
+          cd ml
+          python scripts/synth_data.py --signs 40 --signers 8 --takes 8 --clean
+          python scripts/train_lite.py
+          python scripts/train_fingerspelling.py
+      - if: steps.guard.outputs.skip != 'true'
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy
+        if: steps.guard.outputs.skip != 'true'
+        run: flyctl deploy --config api/fly.toml --remote-only
+
+  deploy-web:
+    name: Deploy web → Vercel
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check secret
+        id: guard
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::notice::VERCEL_TOKEN not set — skipping web deploy."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Deploy (Vercel CLI)
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

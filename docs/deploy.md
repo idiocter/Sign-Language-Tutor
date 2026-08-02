@@ -7,6 +7,25 @@ Target topology (PROJECT_PLAN.md Phase 5 / TECH_STACK.md Layer 4):
 - **Assets (avatar `.glb` clips, ONNX models) → Cloudflare R2**
 - **Database → Postgres** (pgvector-ready), **Redis** for sessions/cache
 
+## Automated deploy (CI/CD)
+
+`.github/workflows/deploy.yml` runs after **CI passes on `main`** (or via manual
+"Run workflow"). It deploys the API to Fly.io and the web to Vercel, and **skips any target
+whose secrets aren't set** — so it never fails a normal push before you've wired accounts.
+
+Add these as GitHub repo secrets (Settings → Secrets and variables → Actions) to turn it on:
+
+| Target | Secrets |
+|---|---|
+| API → Fly.io | `FLY_API_TOKEN` (`flyctl auth token`) |
+| web → Vercel | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` |
+
+The API deploy job regenerates the interim model artifacts and bakes them into the image, so
+a fresh deploy has a working recognition/fingerspelling demo. Swap that for pulling real
+trained models from R2 once they exist.
+
+Manual deploy steps (if you'd rather not use the workflow) follow.
+
 ## 0. Generate model artifacts first
 
 The API serves the recognition/fingerspelling ONNX models from `api/models/`. They are
