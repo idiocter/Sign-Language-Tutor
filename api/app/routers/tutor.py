@@ -14,7 +14,7 @@ from signbridge.config import FEATURE_DIM
 from signbridge.scoring.dtw import score_attempt
 from signbridge.tutor.scheduler import Rating, ReviewCard, Scheduler
 
-from .. import tutor_store
+from .. import references, tutor_store
 from ..db import get_db
 from ..schemas import (
     LessonIn,
@@ -123,6 +123,18 @@ def learner_review(learner_id: int, payload: ReviewSubmit, db: Session = Depends
     )
 
 
+def _score_and_critique(learner: np.ndarray, reference: np.ndarray, language: str) -> ScoreOut:
+    result = score_attempt(learner, reference)
+    critique = _critique.run(result, AgentContext(language=language))
+    return ScoreOut(
+        overall=result.overall,
+        parameters=result.parameters.__dict__,
+        feedback_target=result.feedback_target,
+        feedback_message=critique.message,
+        passed=critique.passed,
+    )
+
+
 @router.post("/score", response_model=ScoreOut)
 def score(payload: ScoreIn) -> ScoreOut:
     learner = np.asarray(payload.learner, dtype=np.float32)
@@ -133,12 +145,38 @@ def score(payload: ScoreIn) -> ScoreOut:
                 status_code=422,
                 detail=f"{name} must be (frames, {FEATURE_DIM}); got {arr.shape}",
             )
-    result = score_attempt(learner, reference)
-    critique = _critique.run(result, AgentContext(language=payload.language))
-    return ScoreOut(
-        overall=result.overall,
-        parameters=result.parameters.__dict__,
-        feedback_target=result.feedback_target,
-        feedback_message=critique.message,
-        passed=critique.passed,
-    )
+    return _score_and_critique(learner, reference, payload.language)
+
+
+class ScoreSignIn(BaseModel):
+    sign_id: str
+    learner: list[list[float]]
+    language: str = "en"
+
+
+@router.get("/score/status")
+def score_status() -> dict:
+    return {"references_available": references.available()}
+
+
+@router.post("/score-sign", response_model=ScoreOut)
+def score_sign(payload: ScoreSignIn) -> ScoreOut:
+    """Score a learner attempt against the stored reference for a sign (DTW + Critique)."""
+    ref = references.load_reference(payload.sign_id)
+    if ref is None:
+        raise HTTPException(404, f"no reference for {payload.sign_id} — run build_references.py")
+    learner = np.asarray(payload.learner, dtype=np.float32)
+    if learner.ndim != 2 or learner.shape[1] != FEATURE_DIM:
+        raise HTTPException(422, f"learner must be (frames, {FEATURE_DIM}); got {learner.shape}")
+    return _score_and_critique(learner, ref, payload.language)
+
+
+@router.post("/score-demo", response_model=ScoreOut)
+def score_demo(sign_id: str, language: str = "en", noise: float = 0.12) -> ScoreOut:
+    """Synthesize an attempt for a sign and score it — exercises the full DTW + Critique
+    path without a webcam. Raise `noise` to see the score drop and the feedback change."""
+    ref = references.load_reference(sign_id)
+    if ref is None:
+        raise HTTPException(404, f"no reference for {sign_id} — run build_references.py")
+    attempt = references.synthesize_attempt(ref, noise)
+    return _score_and_critique(attempt, ref, language)

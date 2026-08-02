@@ -226,6 +226,31 @@ export async function submitRating(signId: string, score: number, comment?: stri
   if (!res.ok) throw new Error(`${res.status}`);
 }
 
+export interface Score {
+  overall: number;
+  parameters: Record<string, number>;
+  feedback_target: string;
+  feedback_message: string;
+  passed: boolean;
+}
+
+export async function scoreDemo(signId: string, language: string, noise = 0.12): Promise<Score> {
+  const q = new URLSearchParams({ sign_id: signId, language, noise: String(noise) });
+  const res = await fetch(`${API_BASE}/tutor/score-demo?${q}`, { method: "POST" });
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json() as Promise<Score>;
+}
+
+export async function scoreSign(signId: string, learner: number[][], language: string): Promise<Score> {
+  const res = await fetch(`${API_BASE}/tutor/score-sign`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sign_id: signId, learner, language }),
+  });
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json() as Promise<Score>;
+}
+
 export async function transliterate(text: string): Promise<string> {
   const res = await fetch(`${API_BASE}/signs/transliterate`, {
     method: "POST",

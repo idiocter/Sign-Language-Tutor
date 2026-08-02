@@ -135,6 +135,24 @@
     "error": "Could not run recognition. Is the backend running?",
     "synthetic": "Interim model trained on synthetic data — measures the pipeline, not real NSL recognition."
   },
+  "score": {
+    "title": "Movement scoring (DTW)",
+    "attempt": "Attempt",
+    "clean": "clean",
+    "okay": "okay",
+    "sloppy": "sloppy",
+    "score": "Score an attempt",
+    "scoring": "Scoring…",
+    "passed": "Nice!",
+    "keepGoing": "Keep practicing",
+    "params": {
+      "handshape": "Handshape",
+      "location": "Location",
+      "movement": "Movement",
+      "orientation": "Orientation"
+    },
+    "note": "Real DTW on joint angles vs. the sign's reference, decomposed per parameter. Uses a synthesized attempt (a slider stands in for the webcam); references are synthetic until real signs are collected."
+  },
   "fingerspell": {
     "title": "Fingerspelling (Phase 1.5)",
     "placeholder": "Type a word (e.g. namaste)…",

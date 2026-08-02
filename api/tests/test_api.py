@@ -130,6 +130,25 @@ def test_tutor_loop_end_to_end():
     assert "today_bs" in state
 
 
+def test_score_demo_runs_dtw_and_critique():
+    if not client.get("/tutor/score/status").json()["references_available"]:
+        return  # references not built in this env
+    # A closer attempt (low noise) must score higher than a sloppy one (high noise), and
+    # both must return a concrete parameter target + localized feedback.
+    good = client.post("/tutor/score-demo", params={"sign_id": "NSL_0001", "noise": 0.02}).json()
+    bad = client.post("/tutor/score-demo", params={"sign_id": "NSL_0001", "noise": 0.6}).json()
+    assert 0 <= bad["overall"] < good["overall"] <= 100
+    for r in (good, bad):
+        assert r["feedback_message"]
+        assert r["feedback_target"] in {"handshape", "location", "movement", "orientation"}
+    # per-parameter error decomposition is present
+    assert set(good["parameters"]) == {"handshape", "location", "movement", "orientation"}
+
+
+def test_score_demo_unknown_sign_404():
+    assert client.post("/tutor/score-demo", params={"sign_id": "NSL_9999"}).status_code == 404
+
+
 def test_tutor_unknown_learner_404():
     assert client.get("/tutor/learner/999999").status_code == 404
 
