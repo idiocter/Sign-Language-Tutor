@@ -28,8 +28,11 @@ signbridge/
   transliterate.py     Roman -> Devanagari (Phase 0 deliverable, >=90% on test set)
   capture_tool.py      Webcam -> normalized landmark .npy   [full extra]
   preprocessing.py     normalize / augment / split_by_signer (signer-independent!)
+  graph.py             Skeleton adjacency (MediaPipe hand+pose edges) — torch-free
   models/
     sign_transformer.py  Isolated-sign Transformer encoder + ONNX export  [full extra]
+    st_gcn.py            ST-GCN over the skeleton graph (alternative)  [full extra]
+    linear_model.py      Interim numpy classifier + hand-built ONNX (runs on 3.14)
     fingerspelling.py    Devanagari manual-alphabet MobileNetV3 (Phase 1.5)  [full extra]
   scoring/dtw.py       DTW on joint angles, decomposed by sign parameter
   tutor/
