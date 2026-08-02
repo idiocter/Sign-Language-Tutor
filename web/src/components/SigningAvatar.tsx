@@ -10,7 +10,7 @@
 // Ready Player Me glTF with ARKit blendshapes takes over.
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { ContactShadows, OrbitControls } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { ProducePlan } from "@/lib/api";
@@ -160,7 +160,7 @@ function Rig({ plan, speed = 1 }: { plan: ProducePlan | null; speed?: number }) 
 
   const rFingers = useMemo(makeHandJoints, []);
   const lFingers = useMemo(makeHandJoints, []);
-  const skinMat = useMemo(() => new THREE.MeshStandardMaterial({ color: SKIN }), []);
+  const skinMat = useMemo(() => new THREE.MeshStandardMaterial({ color: SKIN, roughness: 0.68, metalness: 0.02 }), []);
   const boneGeom = useMemo(() => new THREE.CapsuleGeometry(0.045, 1, 4, 8), []);
 
   useFrame(() => {
@@ -292,13 +292,16 @@ function Rig({ plan, speed = 1 }: { plan: ProducePlan | null; speed?: number }) 
 
 export default function SigningAvatar({ plan, speed = 1 }: { plan: ProducePlan | null; speed?: number }) {
   return (
-    <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gradient-to-b from-slate-800/40 to-black/50 sm:aspect-video">
-      <Canvas camera={{ position: [0, 1.25, 2.3], fov: 42 }} shadows>
-        <ambientLight intensity={0.7} />
-        <directionalLight position={[2, 4, 3]} intensity={1.3} />
-        <directionalLight position={[-2, 2, 1]} intensity={0.4} />
+    <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gradient-to-b from-slate-700/50 via-slate-800/40 to-slate-950/60 sm:aspect-video">
+      <Canvas camera={{ position: [0, 1.25, 2.3], fov: 42 }} shadows dpr={[1, 2]}>
+        {/* soft sky/ground fill + a key light and a cool rim light */}
+        <hemisphereLight args={["#e8eeff", "#1a1e28", 0.85]} />
+        <directionalLight position={[3, 6, 4]} intensity={1.5} castShadow shadow-mapSize={[1024, 1024]} />
+        <directionalLight position={[-3, 3, -2]} intensity={0.5} color="#9db4ff" />
         <Rig plan={plan} speed={speed} />
-        <OrbitControls enablePan={false} target={[0, 1.15, 0]} minDistance={1.4} maxDistance={5} />
+        {/* grounded contact shadow at the feet */}
+        <ContactShadows position={[0, 0.01, 0]} opacity={0.55} scale={4} blur={2.6} far={3} resolution={512} />
+        <OrbitControls enablePan={false} target={[0, 1.1, 0]} minDistance={1.4} maxDistance={5} />
       </Canvas>
     </div>
   );
