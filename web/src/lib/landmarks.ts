@@ -22,6 +22,66 @@ export const FEATURE_DIM = NUM_LANDMARKS * DIMS;
 const LEFT_SHOULDER = 11;
 const RIGHT_SHOULDER = 12;
 
+export interface LM {
+  x: number;
+  y: number;
+  z: number;
+}
+
+/**
+ * Assemble one flat FEATURE_DIM frame in the exact order the Python capture tool uses:
+ * pose(33) ++ left_hand(21) ++ right_hand(21) ++ face(FACE_SUBSET). Missing parts are
+ * zero-filled, matching capture_tool.extract.
+ */
+export function assembleFrame(
+  pose: LM[] | null,
+  leftHand: LM[] | null,
+  rightHand: LM[] | null,
+  face: LM[] | null,
+): Float32Array {
+  const out = new Float32Array(FEATURE_DIM);
+  let o = 0;
+  const put = (pts: LM[] | null, n: number) => {
+    for (let i = 0; i < n; i++) {
+      const p = pts && pts[i];
+      out[o++] = p ? p.x : 0;
+      out[o++] = p ? p.y : 0;
+      out[o++] = p ? p.z : 0;
+    }
+  };
+  put(pose, POSE_PTS);
+  put(leftHand, HAND_PTS);
+  put(rightHand, HAND_PTS);
+  // face: pick the subset indices out of the full 478-point mesh
+  for (let i = 0; i < FACE_PTS; i++) {
+    const p = face ? face[FACE_SUBSET[i]] : null;
+    out[o++] = p ? p.x : 0;
+    out[o++] = p ? p.y : 0;
+    out[o++] = p ? p.z : 0;
+  }
+  return out;
+}
+
+/**
+ * Temporal mean++std pooling over a set of frames -> length 2*FEATURE_DIM. Population std
+ * (ddof=0) to match numpy / signbridge.models.linear_model.pool_features.
+ */
+export function poolMeanStd(frames: Float32Array[]): number[] {
+  const n = frames.length;
+  const mean = new Float64Array(FEATURE_DIM);
+  for (const f of frames) for (let i = 0; i < FEATURE_DIM; i++) mean[i] += f[i];
+  for (let i = 0; i < FEATURE_DIM; i++) mean[i] /= n;
+  const std = new Float64Array(FEATURE_DIM);
+  for (const f of frames) for (let i = 0; i < FEATURE_DIM; i++) std[i] += (f[i] - mean[i]) ** 2;
+  for (let i = 0; i < FEATURE_DIM; i++) std[i] = Math.sqrt(std[i] / n);
+  const out = new Array<number>(2 * FEATURE_DIM);
+  for (let i = 0; i < FEATURE_DIM; i++) {
+    out[i] = mean[i];
+    out[FEATURE_DIM + i] = std[i];
+  }
+  return out;
+}
+
 /**
  * Shoulder-normalize one frame: center on the shoulder midpoint, scale by shoulder width.
  * Mirrors preprocessing.normalize in Python. `frame` is a flat FEATURE_DIM vector.
