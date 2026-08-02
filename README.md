@@ -1,5 +1,7 @@
 # SignBridge
 
+[![CI](https://github.com/idiocter/Sign-Language-Tutor/actions/workflows/ci.yml/badge.svg)](https://github.com/idiocter/Sign-Language-Tutor/actions/workflows/ci.yml)
+
 Bilingual (English + Nepali) **Nepali Sign Language (NSL)** tutor and interpreter with an
 animated signing avatar.
 

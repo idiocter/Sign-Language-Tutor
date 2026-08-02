@@ -29,10 +29,19 @@ export default function WebcamRecognizer() {
 
   async function start() {
     setError(null);
+    // Load the MediaPipe library separately so a chunk-load hiccup (common in Next dev
+    // after a server restart) gives a clear message instead of a fatal-looking overlay.
+    let mp: typeof import("@mediapipe/tasks-vision");
     try {
-      const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
-      const vision = await FilesetResolver.forVisionTasks(WASM_BASE);
-      landmarkerRef.current = await HandLandmarker.createFromOptions(vision, {
+      mp = await import("@mediapipe/tasks-vision");
+    } catch {
+      // ChunkLoadError etc. — usually stale dev chunks; a hard refresh fixes it.
+      setError(t("libFailed"));
+      return;
+    }
+    try {
+      const vision = await mp.FilesetResolver.forVisionTasks(WASM_BASE);
+      landmarkerRef.current = await mp.HandLandmarker.createFromOptions(vision, {
         baseOptions: { modelAssetPath: HAND_MODEL, delegate: "GPU" },
         numHands: 2,
         runningMode: "VIDEO",
@@ -45,9 +54,10 @@ export default function WebcamRecognizer() {
       setRunning(true);
       loop();
     } catch (e) {
+      // Missing .task models, blocked wasm, or no camera permission — all non-fatal.
       setError(t("modelMissing"));
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.warn("[WebcamRecognizer] could not start:", e);
     }
   }
 

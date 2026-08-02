@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ml-tests:
+    name: ML foundation tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # torch/mediapipe aren't needed; 3.12 is the stable target
+          cache: pip
+      - run: pip install -e ".[foundation]"
+      - run: pytest -q
+
+  ml-pipeline:
+    name: ML pipeline smoke (synth -> train -> ONNX -> eval)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[foundation]"
+      - name: Recognition pipeline
+        run: |
+          python scripts/synth_data.py --signs 20 --signers 6 --takes 6 --clean
+          python scripts/train_lite.py
+          python scripts/eval.py
+      - name: Fingerspelling pipeline
+        run: python scripts/train_fingerspelling.py
+
+  api-tests:
+    name: API tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e "../ml[foundation]"
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  web-build:
+    name: Web typecheck + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE: http://127.0.0.1:8000

@@ -117,6 +117,7 @@
     "avatarLabel": "Reference avatar",
     "recognizerLabel": "Your camera",
     "modelMissing": "MediaPipe models not found. Download them into public/models/mediapipe (see DOWNLOADS.md).",
+    "libFailed": "Couldn't load the vision library. If the dev server just restarted, hard-refresh the page (Cmd/Ctrl+Shift+R).",
     "notReady": "Recognition model is not trained yet — this shows detected landmarks only."
   },
   "recognize": {
