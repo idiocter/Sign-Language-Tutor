@@ -23,6 +23,23 @@ const WASM_BASE =
 const MIN_FRAMES = 30;
 const PREDICT_EVERY_MS = 700;
 
+// Connections for drawing the tracked skeleton so the whole body is visibly used.
+const POSE_CONNECTIONS: [number, number][] = [
+  [11, 12], [11, 13], [13, 15], [12, 14], [14, 16], // shoulders + arms
+  [11, 23], [12, 24], [23, 24], // torso
+  [23, 25], [25, 27], [24, 26], [26, 28], // legs
+  [15, 17], [15, 19], [16, 18], [16, 20], // hands off wrists
+  [0, 11], [0, 12], // neck-ish
+];
+const HAND_CONNECTIONS: [number, number][] = [
+  [0, 1], [1, 2], [2, 3], [3, 4],
+  [0, 5], [5, 6], [6, 7], [7, 8],
+  [0, 9], [9, 10], [10, 11], [11, 12],
+  [0, 13], [13, 14], [14, 15], [15, 16],
+  [0, 17], [17, 18], [18, 19], [19, 20],
+  [5, 9], [9, 13], [13, 17],
+];
+
 export default function WebcamRecognizer() {
   const t = useTranslations("practice");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -137,18 +154,45 @@ export default function WebcamRecognizer() {
     buf.push(frame);
     if (buf.length > SEQ_LEN) buf.shift();
 
-    // draw hand landmarks
+    // Draw the FULL tracked skeleton — pose (body) + face + both hands — so it's clear the
+    // whole body feeds the model, not just the hands.
     const ctx = canvas.getContext("2d")!;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#5b8cff";
-    for (const h of hands) {
-      for (const p of h) {
-        ctx.beginPath();
-        ctx.arc(p.x * canvas.width, p.y * canvas.height, 3, 0, Math.PI * 2);
-        ctx.fill();
+    const W = (canvas.width = video.videoWidth || 640);
+    const H = (canvas.height = video.videoHeight || 480);
+    ctx.clearRect(0, 0, W, H);
+
+    const seg = (a: LM | undefined, b: LM | undefined, color: string, width = 3) => {
+      if (!a || !b) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(a.x * W, a.y * H);
+      ctx.lineTo(b.x * W, b.y * H);
+      ctx.stroke();
+    };
+    const dot = (p: LM, color: string, r = 3) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, r, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    // body skeleton
+    if (poseLm) {
+      for (const [a, b] of POSE_CONNECTIONS) seg(poseLm[a], poseLm[b], "#7cf59a", 3);
+      for (const p of poseLm) dot(p, "#3fd06a", 2.5);
+    }
+    // face mesh (light, downsampled so it's not a solid blob)
+    if (faceLm) {
+      ctx.fillStyle = "rgba(255,220,120,0.5)";
+      for (let i = 0; i < faceLm.length; i += 4) {
+        ctx.fillRect(faceLm[i].x * W, faceLm[i].y * H, 1.4, 1.4);
       }
+    }
+    // hands
+    for (const h of hands) {
+      for (const [a, b] of HAND_CONNECTIONS) seg(h[a], h[b], "#5b8cff", 2.5);
+      for (const p of h) dot(p, "#a9c2ff", 3);
     }
 
     // throttled recognition

@@ -2,6 +2,7 @@
 // where each hand is and how the face is posed, with co-articulation blending between signs.
 
 import type { AnimationStep, ProducePlan } from "./api";
+import { SIGN_CLIPS, sampleClip } from "./signClips";
 
 export type Vec3 = [number, number, number];
 
@@ -106,24 +107,61 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
   const prev = idx > 0 ? plan.steps[idx - 1] : null;
 
   const p = Math.min(Math.max((t - step.start_ms) / Math.max(step.duration_ms, 1), 0), 1);
-  const mv = step.pose?.movement ?? { kind: "static", amplitude: 0, repeats: 1 };
-  // Damp motion so the characteristic handshape + location stay readable.
-  const amp = mv.amplitude * 0.6;
 
-  // Base positions with movement offset.
-  let right = handBase(step, "right") ?? NEUTRAL_R;
-  right = add(right, movementOffset(mv.kind, amp, mv.repeats, p, 1));
-  let left = handBase(step, "left");
-  if (left) left = add(left, movementOffset(mv.kind, amp, mv.repeats, p, -1));
+  let right: Vec3;
+  let left: Vec3 | null;
+  let rightShape: string;
+  let leftShape: string;
+  let rightCurl: number;
+  let leftCurl: number;
+  let brow: { up: number; down: number };
+  let jawOpen: number;
+  let smile: number;
+  let pucker: number;
+  let headStatic: Vec3;
+  let headGesture: "nod" | "shake" | null;
 
-  const fac = facialTargets(step);
+  const clip = SIGN_CLIPS[step.sign_id];
+  if (clip) {
+    // Authored keyframe animation — a real choreography for this sign.
+    const c = sampleClip(clip, p);
+    right = c.right;
+    rightShape = c.rightShape;
+    rightCurl = c.rightCurl;
+    left = c.left;
+    leftShape = c.leftShape;
+    leftCurl = c.leftCurl;
+    brow = c.brow;
+    jawOpen = c.jawOpen;
+    smile = c.smile;
+    pucker = 0;
+    headStatic = c.headStatic;
+    headGesture = c.headGesture;
+  } else {
+    // Procedural fallback: characteristic pose + damped generic motion.
+    const mv = step.pose?.movement ?? { kind: "static", amplitude: 0, repeats: 1 };
+    const amp = mv.amplitude * 0.6;
+    right = add(handBase(step, "right") ?? NEUTRAL_R, movementOffset(mv.kind, amp, mv.repeats, p, 1));
+    left = handBase(step, "left");
+    if (left) left = add(left, movementOffset(mv.kind, amp, mv.repeats, p, -1));
+    const fac = facialTargets(step);
+    rightShape = step.pose?.right_hand.handshape ?? "";
+    leftShape = step.pose?.left_hand?.handshape ?? "";
+    rightCurl = step.pose?.right_hand.curl ?? 0.2;
+    leftCurl = step.pose?.left_hand?.curl ?? 0.2;
+    brow = fac.brow;
+    jawOpen = fac.jawOpen;
+    smile = fac.smile;
+    pucker = fac.pucker;
+    headStatic = step.facial.head_rotation as Vec3;
+    headGesture = step.facial.head_gesture;
+  }
 
-  // Co-articulation crossfade at the start of a step: blend from the previous sign's pose.
+  // Co-articulation crossfade at the start of a step: blend hands from the previous sign.
   if (prev && step.crossfade_ms > 0) {
     const cf = Math.min((t - step.start_ms) / step.crossfade_ms, 1);
     if (cf < 1) {
-      const prevR = add(handBase(prev, "right") ?? NEUTRAL_R, [0, 0, 0]);
-      right = lerp3(prevR, right, cf);
+      right = lerp3(handBase(prev, "right") ?? NEUTRAL_R, right, cf);
       const prevL = handBase(prev, "left");
       if (left && prevL) left = lerp3(prevL, left, cf);
     }
@@ -131,21 +169,21 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
 
   return {
     right,
-    rightCurl: step.pose?.right_hand.curl ?? 0.2,
-    rightShape: step.pose?.right_hand.handshape ?? "",
+    rightCurl,
+    rightShape,
     left,
-    leftCurl: step.pose?.left_hand?.curl ?? 0.2,
-    leftShape: step.pose?.left_hand?.handshape ?? "",
-    brow: fac.brow,
-    jawOpen: fac.jawOpen,
-    smile: fac.smile,
-    pucker: fac.pucker,
-    headStatic: step.facial.head_rotation as Vec3,
-    headGesture: step.facial.head_gesture,
+    leftCurl,
+    leftShape,
+    brow,
+    jawOpen,
+    smile,
+    pucker,
+    headStatic,
+    headGesture,
     gesturePhase: p,
     signId: step.sign_id,
     gloss: step.gloss,
-    handshapeLabel: step.pose?.right_hand.handshape ?? "",
+    handshapeLabel: rightShape,
     locationLabel: step.pose?.right_hand.location_label ?? "",
     movementLabel: step.pose?.right_hand.movement_label ?? "",
   };
