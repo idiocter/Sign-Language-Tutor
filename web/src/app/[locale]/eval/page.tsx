@@ -14,6 +14,7 @@ import {
   type RatingsSummary,
   type Sign,
 } from "@/lib/api";
+import { PageHeader } from "@/components/ui";
 
 const SigningAvatar = dynamic(() => import("@/components/SigningAvatar"), { ssr: false });
 
@@ -52,10 +53,7 @@ export default function EvalPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-white/60">{t("subtitle")}</p>
-      </div>
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <section className="grid gap-4 sm:grid-cols-2">
         <MetricCard

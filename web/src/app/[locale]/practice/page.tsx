@@ -9,6 +9,7 @@ import WebcamRecognizer from "@/components/WebcamRecognizer";
 import RecognitionDemo from "@/components/RecognitionDemo";
 import FingerspellDemo from "@/components/FingerspellDemo";
 import ScoreFeedback from "@/components/ScoreFeedback";
+import { PageHeader } from "@/components/ui";
 
 // three.js must not render on the server.
 const SigningAvatar = dynamic(() => import("@/components/SigningAvatar"), { ssr: false });
@@ -31,23 +32,25 @@ export default function PracticePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-        <label className="flex items-center gap-2 text-sm text-white/70">
-          {t("targetSign")}
-          <select
-            value={targetSignId}
-            onChange={(e) => setTargetSign(e.target.value)}
-            className="rounded-lg border border-white/15 bg-white/[0.04] px-3 py-1.5 outline-none"
-          >
-            {signs.map((s) => (
-              <option key={s.sign_id} value={s.sign_id}>
-                {s.en} — {s.ne}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <PageHeader
+        title={t("title")}
+        actions={
+          <label className="flex items-center gap-2 text-sm text-white/70">
+            {t("targetSign")}
+            <select
+              value={targetSignId}
+              onChange={(e) => setTargetSign(e.target.value)}
+              className="rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-1.5 outline-none"
+            >
+              {signs.map((s) => (
+                <option key={s.sign_id} value={s.sign_id}>
+                  {s.en} — {s.ne}
+                </option>
+              ))}
+            </select>
+          </label>
+        }
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="flex flex-col gap-2">

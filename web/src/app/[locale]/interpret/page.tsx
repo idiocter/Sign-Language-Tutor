@@ -11,6 +11,7 @@ import {
   type Sign,
 } from "@/lib/api";
 import { listenOnce, speak, speechSupported } from "@/lib/speech";
+import { PageHeader } from "@/components/ui";
 
 const SigningAvatar = dynamic(() => import("@/components/SigningAvatar"), { ssr: false });
 
@@ -23,12 +24,9 @@ export default function InterpretPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-white/60">{t("subtitle")}</p>
-      </div>
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      <div className="flex gap-1 rounded-lg border border-white/10 p-1 w-fit">
+      <div className="flex w-fit gap-1 rounded-lg border border-[var(--border)] p-1">
         {(["text2sign", "sign2text"] as Direction[]).map((d) => (
           <button
             key={d}

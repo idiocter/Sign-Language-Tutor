@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { produce, transliterate, type ProducePlan } from "@/lib/api";
+import { Badge, Button, Card, PageHeader } from "@/components/ui";
 
 const SigningAvatar = dynamic(() => import("@/components/SigningAvatar"), { ssr: false });
 
@@ -41,10 +42,7 @@ export default function ProducePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="mt-1 text-white/60">{t("subtitle")}</p>
-      </div>
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="flex flex-col gap-3">
@@ -52,7 +50,7 @@ export default function ProducePage() {
             value={text}
             onChange={(e) => onChange(e.target.value)}
             rows={3}
-            className="w-full rounded-lg border border-white/15 bg-white/[0.04] px-4 py-3 outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 outline-none focus:border-[var(--accent)]"
             placeholder={t("placeholder")}
           />
           {locale === "ne" && deva && (
@@ -60,25 +58,21 @@ export default function ProducePage() {
               {t("devanagari")}: <span className="text-[var(--accent)]">{deva}</span>
             </p>
           )}
-          <button
-            onClick={sign}
-            disabled={busy || !text.trim()}
-            className="w-fit rounded-lg bg-[var(--accent)] px-5 py-2.5 font-medium text-white hover:opacity-90 disabled:opacity-40"
-          >
+          <Button onClick={sign} disabled={busy || !text.trim()} className="w-fit" size="lg">
             {busy ? t("signing") : t("sign")}
-          </button>
+          </Button>
 
           {plan && (
-            <div className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm">
+            <Card className="flex flex-col gap-2 p-3 text-sm">
               <div>
                 <span className="text-white/50">{t("gloss")}:</span>{" "}
                 <span className="font-mono">{plan.gloss || "—"}</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {plan.steps.map((s, i) => (
-                  <span key={i} className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs">
+                  <Badge key={i} tone="neutral" className="font-mono">
                     {s.gloss}
-                  </span>
+                  </Badge>
                 ))}
               </div>
               <div className="flex gap-4 text-xs text-white/50">
@@ -87,7 +81,7 @@ export default function ProducePage() {
                   {plan.has_facial_motion ? t("faceActive") : t("faceStatic")}
                 </span>
               </div>
-            </div>
+            </Card>
           )}
           {error && <p className="text-amber-400">{error}</p>}
         </section>
