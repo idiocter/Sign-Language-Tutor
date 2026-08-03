@@ -4,11 +4,16 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "SignBridge",
-  description: "Bilingual Nepali Sign Language tutor and interpreter",
+  title: {
+    default: "SignBridge — Learn Nepali Sign Language",
+    template: "%s · SignBridge",
+  },
+  description:
+    "Bilingual (English + Nepali) Nepali Sign Language tutor and interpreter with an animated signing avatar.",
 };
 
 export function generateStaticParams() {
@@ -33,9 +38,12 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <div className="mx-auto flex min-h-screen max-w-5xl flex-col">
+          <div className="flex min-h-screen flex-col">
             <Nav />
-            <main className="flex-1 px-6 py-8">{children}</main>
+            <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
+              <div className="animate-fade-up">{children}</div>
+            </main>
+            <Footer />
           </div>
         </NextIntlClientProvider>
       </body>

@@ -162,6 +162,10 @@
     "synthetic": "Interim model on synthetic hand poses — measures the pipeline, not real fingerspelling.",
     "error": "Could not fingerspell. Is the backend running?"
   },
+  "footer": {
+    "tagline": "SignBridge — a bilingual Nepali Sign Language tutor and interpreter.",
+    "builtWith": "Built with the Nepali Deaf community in mind. On-device, privacy-first."
+  },
   "language": {
     "en": "English",
     "ne": "नेपाली"
