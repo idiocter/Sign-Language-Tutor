@@ -85,23 +85,33 @@
     "error": "Could not build the signing plan. Is the backend running?"
   },
   "home": {
-    "title": "Welcome to SignBridge",
-    "subtitle": "A bilingual tutor and interpreter for Nepali Sign Language.",
-    "startPractice": "Start practicing",
-    "browseDictionary": "Browse the dictionary",
-    "phaseNote": "This is an early build. Recognition and the avatar clips are still being trained and authored.",
-    "cards": {
-      "recognize": "Recognize signs from your webcam",
-      "recognizeBody": "MediaPipe reads your hands and face on-device — video never leaves your computer.",
-      "avatar": "Watch the avatar sign",
-      "avatarBody": "A 3D avatar produces each sign with the facial grammar that carries meaning.",
-      "tutor": "Practice with spaced repetition",
-      "tutorBody": "Get specific, joint-level feedback and reviews scheduled the day you need them."
+    "title": "Learn Nepali Sign Language with an animated tutor",
+    "subtitle": "A bilingual tutor and interpreter for NSL — an avatar that signs, on-device recognition, and spaced-repetition lessons in English and Nepali.",
+    "startLearning": "Start learning",
+    "tryAvatar": "Try the avatar",
+    "open": "Open",
+    "phaseNote": "Early build: models are trained on synthetic data and avatar motion is procedural. Accuracy and sign fidelity improve once real NSL data and authored clips are added — the pipeline runs end-to-end today.",
+    "features": {
+      "tutor": { "title": "Learn", "body": "Spaced-repetition lessons — the avatar signs, you rate how well you knew it." },
+      "practice": { "title": "Practice", "body": "On-device recognition, movement scoring, and fingerspelling from your webcam." },
+      "produce": { "title": "Sign it", "body": "Type English or Nepali and watch the avatar sign it in NSL." },
+      "interpret": { "title": "Interpret", "body": "Two-way, constrained-domain interpretation between NSL and speech/text." },
+      "learn": { "title": "Dictionary", "body": "Browse the sign vocabulary with labels in English and Nepali." },
+      "eval": { "title": "Evaluation", "body": "Model metrics and native-signer avatar intelligibility ratings." }
+    },
+    "trust": {
+      "privacy": { "title": "Privacy-first", "body": "Recognition runs in your browser — your camera video never leaves the device." },
+      "bilingual": { "title": "Fully bilingual", "body": "Every screen works in English and Nepali, with Devanagari and Romanized input." },
+      "community": { "title": "Community-centred", "body": "Designed with the Nepali Deaf community's needs at the core, not as an afterthought." }
     }
   },
   "learn": {
     "title": "Sign dictionary",
+    "subtitle": "Browse the vocabulary in English and Nepali. Tap a sign to practice it.",
     "search": "Search signs…",
+    "all": "All",
+    "count": "{n} signs",
+    "practiceThis": "Practice this →",
     "empty": "No signs match your search.",
     "difficulty": "Difficulty",
     "category": "Category",
