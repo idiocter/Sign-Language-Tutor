@@ -64,27 +64,54 @@ def _hand(frame: np.ndarray, base: int) -> np.ndarray:
 # --- Per-frame feature extractors -------------------------------------------
 
 def _handshape_features(frame: np.ndarray) -> np.ndarray:
-    """Finger joint angles for both hands (curl of each finger)."""
+    """Per-finger curl as an extension ratio for both hands.
+
+    curl = 1 - |tip - mcp| / (total bone length). ~0 when the finger is straight, ~1 when
+    fully curled. This is far more stable under landmark noise than raw joint angles (which
+    blow up near-degenerate triangles), so the score reflects real handshape differences
+    rather than sensor jitter.
+    """
     feats: list[float] = []
     for base in (_LH0, _RH0):
         hand = _hand(frame, base)
         for joints in _FINGERS.values():
-            # two angles per finger (proximal + distal curl)
-            feats.append(_angle(hand[joints[0]], hand[joints[1]], hand[joints[2]]))
-            feats.append(_angle(hand[joints[1]], hand[joints[2]], hand[joints[3]]))
+            mcp, tip = hand[joints[0]], hand[joints[3]]
+            bone = sum(
+                float(np.linalg.norm(hand[joints[k + 1]] - hand[joints[k]])) for k in range(3)
+            )
+            straight = float(np.linalg.norm(tip - mcp))
+            curl = 1.0 - straight / bone if bone > 1e-6 else 0.0
+            feats.append(max(0.0, min(1.0, curl)))
     return np.asarray(feats, dtype=np.float32)
 
 
+# Palm points (wrist + the four finger MCPs) for a stable plane fit.
+_PALM_PTS = [_WRIST, _INDEX_MCP, 9, 13, _PINKY_MCP]
+
+
 def _orientation_features(frame: np.ndarray) -> np.ndarray:
-    """Palm-normal direction for each hand (wrist→index_mcp × wrist→pinky_mcp)."""
+    """Palm-normal direction for each hand, from an SVD plane fit over the palm points.
+
+    A least-squares normal over five palm points is far steadier than a single
+    wrist→index × wrist→pinky cross product, which flips/jitters under noise.
+    """
     feats: list[float] = []
     for base in (_LH0, _RH0):
         hand = _hand(frame, base)
-        v1 = hand[_INDEX_MCP] - hand[_WRIST]
-        v2 = hand[_PINKY_MCP] - hand[_WRIST]
-        normal = np.cross(v1, v2)
-        norm = np.linalg.norm(normal)
-        feats.extend((normal / norm) if norm > 1e-8 else np.zeros(3))
+        pts = hand[_PALM_PTS]
+        centered = pts - pts.mean(axis=0)
+        # normal = singular vector with the smallest singular value
+        try:
+            _, _, vh = np.linalg.svd(centered, full_matrices=False)
+            normal = vh[-1]
+        except np.linalg.LinAlgError:  # pragma: no cover
+            normal = np.zeros(3, dtype=np.float32)
+        # Fix sign ambiguity: align to the coarse cross-product normal so it's consistent.
+        ref = np.cross(hand[_INDEX_MCP] - hand[_WRIST], hand[_PINKY_MCP] - hand[_WRIST])
+        if float(np.dot(normal, ref)) < 0:
+            normal = -normal
+        n = np.linalg.norm(normal)
+        feats.extend((normal / n) if n > 1e-8 else np.zeros(3))
     return np.asarray(feats, dtype=np.float32)
 
 
@@ -155,9 +182,13 @@ class ScoreResult:
         }
 
 
-# Rough error→score scaling. Tune against real reference/attempt pairs once collected;
-# these are sane starting weights, not measured constants.
-_WEIGHTS = {"handshape": 1.0, "location": 1.2, "movement": 1.5, "orientation": 0.8}
+# Per-parameter weights + a global calibration so the 0–100 score lands in a useful range:
+# a clean attempt (small sensor-level error) reads ~90, a sloppy one drops off smoothly, and
+# a completely wrong sign is near zero. Handshape and location are trusted most; orientation
+# (a fitted normal) is the noisiest signal so it's weighted down. Recalibrate against real
+# reference/attempt pairs once collected.
+_WEIGHTS = {"handshape": 1.4, "location": 1.3, "movement": 1.1, "orientation": 0.6}
+_SCORE_SCALE = 0.42  # global slope of error -> score
 
 
 def score_attempt(learner: np.ndarray, reference: np.ndarray) -> ScoreResult:
@@ -180,10 +211,13 @@ def score_attempt(learner: np.ndarray, reference: np.ndarray) -> ScoreResult:
             _feature_sequence(reference, "orientation"),
         ),
     )
-    weighted = sum(_WEIGHTS[k] * v for k, v in asdict(errors).items())
-    overall = float(100.0 * np.exp(-weighted))  # monotonic: 0 error → 100
+    per_param = {k: _WEIGHTS[k] * v for k, v in asdict(errors).items()}
+    weighted = sum(per_param.values())
+    overall = float(100.0 * np.exp(-_SCORE_SCALE * weighted))  # monotonic: 0 error → 100
+    # Correct first the parameter that costs the most score (weighted, not raw).
+    feedback_target = max(per_param.items(), key=lambda kv: kv[1])[0]
     return ScoreResult(
         overall=round(overall, 1),
         parameters=errors,
-        feedback_target=errors.worst(),
+        feedback_target=feedback_target,
     )
