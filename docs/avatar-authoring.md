@@ -21,6 +21,23 @@ character. Two upgrade paths, both using the existing pose/facial data:
 - **Realistic body:** drop a rigged glTF character (Ready Player Me / Mixamo) into
   `web/public/avatar/character.glb` and retarget: map the IK wrist targets to the model's
   hand bones and the finger curls to its finger bones. Same `sample()` data drives it.
+
+### Make the avatar look like you (from a selfie)
+
+Photo → 3D face can't be done in this repo's code; use an avatar generator, then plug the
+result into the seam above:
+
+1. Go to **[readyplayer.me](https://readyplayer.me)** → **Create Avatar** → upload a
+   front-facing selfie. It builds a rigged 3D head+body that resembles you, **with ARKit
+   blendshapes** (which our facial track already targets — see `ml/signbridge/facial.py`).
+2. Download the **`.glb`** (full-body). Save it as `web/public/avatar/character.glb`.
+3. Ask to wire the loader: the avatar component will load your model with drei's `useGLTF`
+   and drive its arm/finger bones from the same keyframe/IK data, and its face from the
+   ARKit blendshapes. (This retargeting is model-specific, so it's wired once you have the
+   file to test against.)
+
+Until then, `SigningAvatar.tsx` renders a **stylized** figure (tan skin, dark swept hair
+with an undercut, light stubble) — a nod to the reference look, not a photo likeness.
 - **Per-sign motion capture:** author one clip per sign (below) for exact, validated signing.
 
 ## 1. Character + rig (once)
