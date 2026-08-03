@@ -67,6 +67,9 @@ export interface PoseFrame {
   gesturePhase: number;
   signId: string;
   gloss: string;
+  handshapeLabel: string;
+  locationLabel: string;
+  movementLabel: string;
 }
 
 function activeStep(plan: ProducePlan, t: number): AnimationStep {
@@ -104,12 +107,14 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
 
   const p = Math.min(Math.max((t - step.start_ms) / Math.max(step.duration_ms, 1), 0), 1);
   const mv = step.pose?.movement ?? { kind: "static", amplitude: 0, repeats: 1 };
+  // Damp motion so the characteristic handshape + location stay readable.
+  const amp = mv.amplitude * 0.6;
 
   // Base positions with movement offset.
   let right = handBase(step, "right") ?? NEUTRAL_R;
-  right = add(right, movementOffset(mv.kind, mv.amplitude, mv.repeats, p, 1));
+  right = add(right, movementOffset(mv.kind, amp, mv.repeats, p, 1));
   let left = handBase(step, "left");
-  if (left) left = add(left, movementOffset(mv.kind, mv.amplitude, mv.repeats, p, -1));
+  if (left) left = add(left, movementOffset(mv.kind, amp, mv.repeats, p, -1));
 
   const fac = facialTargets(step);
 
@@ -140,6 +145,9 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
     gesturePhase: p,
     signId: step.sign_id,
     gloss: step.gloss,
+    handshapeLabel: step.pose?.right_hand.handshape ?? "",
+    locationLabel: step.pose?.right_hand.location_label ?? "",
+    movementLabel: step.pose?.right_hand.movement_label ?? "",
   };
 }
 

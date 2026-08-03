@@ -61,6 +61,8 @@ export async function predictFeatures(features: number[]): Promise<Prediction[]>
 
 export interface HandPose {
   location: [number, number, number];
+  location_label?: string;
+  movement_label?: string;
   handshape: string;
   curl: number;
   palm_normal: [number, number, number];

@@ -116,6 +116,8 @@ def pose_for(parameters) -> dict:
 
     right = {
         "location": list(anchor),
+        "location_label": parameters.location,
+        "movement_label": parameters.movement,
         "handshape": parameters.handshape,
         "curl": curl,
         "palm_normal": list(normal),
