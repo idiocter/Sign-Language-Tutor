@@ -24,6 +24,8 @@ models/mediapipe/*.task
 web/public/models/recognition/
 web/public/models/
 *.glb
+# ...but commit the single personal avatar so it never gets lost with a browser/localStorage.
+!web/public/avatar/character.glb
 *.onnx
 *.pt
 *.pth

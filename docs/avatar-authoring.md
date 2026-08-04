@@ -31,10 +31,13 @@ result into the seam above:
    front-facing selfie. It builds a rigged 3D head+body that resembles you, **with ARKit
    blendshapes** (which our facial track already targets — see `ml/signbridge/facial.py`).
 2. Download the **`.glb`** (full-body). Save it as `web/public/avatar/character.glb`.
-3. Ask to wire the loader: the avatar component will load your model with drei's `useGLTF`
-   and drive its arm/finger bones from the same keyframe/IK data, and its face from the
-   ARKit blendshapes. (This retargeting is model-specific, so it's wired once you have the
-   file to test against.)
+3. That's it — the loader is already wired. `SigningAvatar.tsx` HEAD-checks for
+   `web/public/avatar/character.glb` on mount and, if present, loads it automatically with
+   drei's `useGLTF`, driving its arm/finger bones from the same keyframe/IK data and its face
+   from the ARKit blendshapes. No localStorage or URL needed. A pasted Ready Player Me URL
+   (the "👤 Use my avatar" button) still works as an override. If a model fails to load, a
+   visible notice appears instead of silently reverting to the stand-in. (Arm/finger
+   retargeting is model-specific and may need tuning once your model is in place.)
 
 Until then, `SigningAvatar.tsx` renders a **stylized** figure (tan skin, dark swept hair
 with an undercut, light stubble) — a nod to the reference look, not a photo likeness.
