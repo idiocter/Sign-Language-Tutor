@@ -53,6 +53,7 @@ repository cannot generate:
 | FSRS spaced-repetition scheduler | |
 | All six Layer-7 agents (symbolic-only) | |
 | **Text → NSL gloss → animated avatar** (procedural) | Authored Blender/ARKit `.glb` clips |
+| **Personal avatar** (drop-in Ready Player Me `.glb`) | Photoreal photo→3D likeness (external generator) |
 | **Co-articulation blending + ARKit facial track** | |
 | FastAPI backend (schema, tutor, inference, produce) | |
 | Next.js UI: avatar, webcam, recognition + sign demo, i18n | |
@@ -70,6 +71,29 @@ Claude Code **skills** and **subagents** for this repo live in [`.claude/`](.cla
 ---
 
 ## Quick start
+
+### 0. Everything at once (recommended)
+
+First-time setup, then run the whole stack (FastAPI on `:8000` + Next.js on `:3000`) with one
+command:
+
+```bash
+make setup          # create ml/.venv, api/.venv; install web/node_modules
+make data train     # generate synthetic data + train the interim recognition model
+./dev.sh            # or: make dev  — starts backend + frontend together (Ctrl-C stops both)
+```
+
+- Frontend: http://localhost:3000 (redirects to `/en`)
+- API docs: http://127.0.0.1:8000/docs
+
+Verify both are up:
+
+```bash
+curl -s -o /dev/null -w "api %{http_code}\n" localhost:8000/health
+curl -s -o /dev/null -w "web %{http_code}\n" localhost:3000/en
+```
+
+The steps below set up each package individually if you'd rather run them separately.
 
 ### 1. Python (`ml/` + `api/`)
 
@@ -126,7 +150,7 @@ asset in.
 - [x] **Phase 0 — Foundation:** schema, vocabulary, capture tool, transliteration, repo
 - [~] **Phase 1 — Recognition MVP:** synth data → signer-split train → ONNX → in-browser + backend inference, live demo; production model needs real NSL data + GPU
 - [~] **Phase 1.5 — Fingerspelling:** 48-char Devanagari alphabet, interim classifier + ONNX, live spell demo; needs real handshape data
-- [~] **Phase 2 — Avatar:** text → gloss → animated signing (procedural pose + ARKit facial track + co-articulation), live `/produce` + Sign-it page; needs authored `.glb` clips + intelligibility validation. See [docs/avatar-authoring.md](docs/avatar-authoring.md)
+- [~] **Phase 2 — Avatar:** text → gloss → animated signing (procedural pose + ARKit facial track + co-articulation), live `/produce` + Sign-it page. Drop a rigged Ready Player Me `.glb` at `web/public/avatar/character.glb` to sign as a personal avatar (auto-loaded, no config); needs authored `.glb` clips + intelligibility validation. See [docs/avatar-authoring.md](docs/avatar-authoring.md)
 - [~] **Phase 3 — Tutor loop:** end-to-end lessons (avatar → FSRS rating → scheduled review), streaks in Bikram Sambat, DTW scoring, all six Layer-7 agents
 - [~] **Phase 4 — Interpreter mode:** bidirectional — text/speech → sign, sign → text/speech (browser Web Speech; text fallback always); needs Nepali ASR/TTS + continuous recognition
 - [~] **Phase 5 — Evaluation & deploy:** signer-independent eval harness, native-signer intelligibility rating collection, Docker + Fly/Vercel configs. See [docs/deploy.md](docs/deploy.md); actual cloud deploy + community ratings are external
