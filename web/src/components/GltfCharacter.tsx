@@ -23,15 +23,45 @@ interface Rig {
   chest?: THREE.Object3D;
 }
 
+// Different exporters name the same bone differently: Mixamo (and three.js's Xbot/Soldier)
+// prefix every bone with "mixamorig:" (e.g. "mixamorig:RightArm"), while Ready Player Me
+// ships them bare ("RightArm"). Normalize to the bare name so the same IK code drives both.
+function normalizeBoneName(n: string): string {
+  return n.replace(/^mixamorig[:_ ]?/i, "");
+}
+
 function collectRig(root: THREE.Object3D): Rig {
   const bones: Record<string, THREE.Bone> = {};
   const morphMeshes: THREE.SkinnedMesh[] = [];
   root.traverse((o) => {
-    if ((o as THREE.Bone).isBone) bones[o.name] = o as THREE.Bone;
+    if ((o as THREE.Bone).isBone) {
+      const bone = o as THREE.Bone;
+      bones[o.name] = bone;
+      const norm = normalizeBoneName(o.name);
+      if (!(norm in bones)) bones[norm] = bone; // don't clobber an already-bare name
+    }
     const sk = o as THREE.SkinnedMesh;
     if (sk.isSkinnedMesh && sk.morphTargetDictionary) morphMeshes.push(sk);
   });
   return { bones, morphMeshes, chest: bones["Spine2"] ?? bones["Spine1"] ?? bones["Spine"] };
+}
+
+// Scale + recenter any dropped-in model to a consistent human height with feet on the
+// ground, so the framing/lighting set up for the procedural rig also fits real avatars.
+const TARGET_HEIGHT = 1.7;
+function fitModel(model: THREE.Object3D) {
+  model.position.set(0, 0, 0);
+  model.scale.setScalar(1);
+  model.updateWorldMatrix(true, true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = new THREE.Vector3();
+  const center = new THREE.Vector3();
+  box.getSize(size);
+  box.getCenter(center);
+  const s = size.y > 1e-4 ? TARGET_HEIGHT / size.y : 1;
+  model.scale.setScalar(s);
+  // Feet at y=0, centered on x/z (box was measured at scale 1, so multiply by s).
+  model.position.set(-center.x * s, -box.min.y * s, -center.z * s);
 }
 
 // Chest-local sign coordinates -> world, using the model's chest bone as the origin.
@@ -99,6 +129,7 @@ export default function GltfCharacter({
         m.frustumCulled = false;
       }
     });
+    fitModel(model);
   }, [model]);
 
   useFrame(() => {
