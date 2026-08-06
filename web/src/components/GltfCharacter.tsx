@@ -16,6 +16,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { ProducePlan } from "@/lib/api";
 import { sample } from "@/lib/playback";
+import { resolveHandShape, CURL_JOINT_MAX, SPREAD_FAN, SPREAD_MAX, type HandShape } from "@/lib/handshapes";
 
 interface Rig {
   bones: Record<string, THREE.Bone>;
@@ -96,6 +97,48 @@ function ccd(chain: THREE.Bone[], effector: THREE.Bone, target: THREE.Vector3, i
 
 const FINGER_BONES = ["Thumb", "Index", "Middle", "Ring", "Pinky"];
 
+// Pose one hand from a resolved handshape. Finger flexion is applied about the bone's local
+// Z (the convention this rig already curled on), progressively over the three joints; finger
+// spread is a small abduction about Y at the base knuckle; the thumb gets its own axes so it
+// can sit across the palm or stand out. Everything is applied as an offset from each bone's
+// captured rest orientation, so a resolved shape doesn't fight the model's natural rig.
+const _delta = new THREE.Quaternion();
+const _euler = new THREE.Euler();
+function poseHand(
+  bones: Record<string, THREE.Bone>,
+  rest: Map<THREE.Bone, THREE.Quaternion>,
+  side: "Left" | "Right",
+  shape: HandShape,
+) {
+  const sgn = side === "Left" ? 1 : -1; // finger flexion curls the opposite way per hand
+  const applyOffset = (b: THREE.Bone, x: number, y: number, z: number) => {
+    const r = rest.get(b);
+    if (!r) return;
+    b.quaternion.copy(r).multiply(_delta.setFromEuler(_euler.set(x, y, z)));
+  };
+
+  // index..pinky
+  for (let fi = 1; fi < 5; fi++) {
+    const curl = shape.curl[fi];
+    const spread = -sgn * SPREAD_FAN[fi] * shape.spread * SPREAD_MAX;
+    for (let j = 1; j <= 3; j++) {
+      const b = bones[`${side}Hand${FINGER_BONES[fi]}${j}`];
+      if (!b) continue;
+      applyOffset(b, 0, j === 1 ? spread : 0, sgn * curl * CURL_JOINT_MAX[j - 1]);
+    }
+  }
+
+  // thumb: base knuckle opposes across the palm (thumbOut low) or abducts out (thumbOut high),
+  // the two distal joints just flex.
+  const across = 1 - shape.thumbOut;
+  const t1 = bones[`${side}HandThumb1`];
+  const t2 = bones[`${side}HandThumb2`];
+  const t3 = bones[`${side}HandThumb3`];
+  if (t1) applyOffset(t1, 0, sgn * across * 0.7, sgn * shape.curl[0] * 0.35);
+  if (t2) applyOffset(t2, 0, 0, sgn * shape.curl[0] * 0.7);
+  if (t3) applyOffset(t3, 0, 0, sgn * shape.curl[0] * 0.6);
+}
+
 interface CaptionOut {
   gloss: string;
   handshape: string;
@@ -120,6 +163,9 @@ export default function GltfCharacter({
   const animTime = useRef(0);
   const lastNow = useRef(performance.now());
   const lastGloss = useRef(" ");
+  // Rest orientation of every finger bone, so handshape flexion is applied as an offset from
+  // the model's natural rig rather than clobbering it.
+  const fingerRest = useRef<Map<THREE.Bone, THREE.Quaternion>>(new Map());
 
   useEffect(() => {
     model.traverse((o) => {
@@ -130,7 +176,15 @@ export default function GltfCharacter({
       }
     });
     fitModel(model);
-  }, [model]);
+    const rest = new Map<THREE.Bone, THREE.Quaternion>();
+    for (const side of ["Left", "Right"] as const)
+      for (const fname of FINGER_BONES)
+        for (let j = 1; j <= 3; j++) {
+          const b = rig.bones[`${side}Hand${fname}${j}`];
+          if (b) rest.set(b, b.quaternion.clone());
+        }
+    fingerRest.current = rest;
+  }, [model, rig]);
 
   useFrame(() => {
     const now = performance.now();
@@ -162,18 +216,12 @@ export default function GltfCharacter({
       armIK("Left", f.left);
     }
 
-    // --- fingers (curl) ---
-    const curlHand = (side: "Left" | "Right", curl: number) => {
-      for (const fname of FINGER_BONES) {
-        for (let j = 1; j <= 3; j++) {
-          const b = bones[`${side}Hand${fname}${j}`];
-          if (b) b.rotation.z = (side === "Left" ? 1 : -1) * curl * 1.1;
-        }
-      }
-    };
+    // --- fingers (per-handshape articulation) ---
+    // Resolve the handshape *label* (index_D, flat_5, fist_S, …) to per-finger flexion +
+    // spread + thumb, instead of applying one uniform curl to every finger.
     if (f) {
-      curlHand("Right", f.rightCurl);
-      if (f.left) curlHand("Left", f.leftCurl);
+      poseHand(bones, fingerRest.current, "Right", resolveHandShape(f.rightShape, f.rightCurl));
+      if (f.left) poseHand(bones, fingerRest.current, "Left", resolveHandShape(f.leftShape, f.leftCurl));
     }
 
     // --- head gesture ---
