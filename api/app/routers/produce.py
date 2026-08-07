@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from signbridge.agents.animation import AnimationDirectorAgent
 from signbridge.agents.base import AgentContext
-from signbridge.agents.gloss import GlossTranslationAgent
+from signbridge.agents.llm_gloss import make_gloss_agent
 
 from .signs import _dictionary
 
@@ -60,7 +60,7 @@ def _clip_available(clip_ref: str | None) -> bool:
 @router.post("/produce", response_model=ProduceOut)
 def produce(payload: ProduceIn) -> ProduceOut:
     d = _dictionary()
-    gloss_agent = GlossTranslationAgent(d)
+    gloss_agent = make_gloss_agent(d)  # LLM-backed when a key is set, else the heuristic
     anim_agent = AnimationDirectorAgent(d)
     ctx = AgentContext(language=payload.language)
 

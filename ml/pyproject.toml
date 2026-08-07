@@ -19,6 +19,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# LLM gloss translation via LangChain + Groq (serves Llama over an OpenAI-compatible API).
+# Optional: without it (or without an API key) the produce pipeline uses the rule-based agent.
+llm = [
+    "langchain-core>=0.3",
+    "langchain-groq>=0.2",
+]
+# Developer/ops tools: the Gradio demo and the vocabulary scraper. Not needed to run the app.
+tools = [
+    "gradio>=4.0",
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+]
 # Lightweight: transliteration, schema, vocabulary, scoring, scheduler + tests.
 foundation = [
     "indic-transliteration>=2.3",

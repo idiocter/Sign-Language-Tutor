@@ -1,0 +1,42 @@
+{
+  "name": "SignBridge — weekly vocabulary harvest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "weeks", "weeksInterval": 1 } ] }
+      },
+      "id": "trigger",
+      "name": "Weekly schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [ 240, 300 ]
+    },
+    {
+      "parameters": {
+        "command": "cd {{$env.SIGNBRIDGE_ROOT}} && ml/.venv/bin/python tools/scrape_vocabulary/scrape.py --url {{$env.NSL_SOURCE_URL}} --check-robots --out tools/scrape_vocabulary/staging_vocab.csv"
+      },
+      "id": "scrape",
+      "name": "Scrape -> staging CSV",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [ 520, 300 ]
+    },
+    {
+      "parameters": {
+        "command": "cd {{$env.SIGNBRIDGE_ROOT}} && echo \"staged rows: $(($(wc -l < tools/scrape_vocabulary/staging_vocab.csv) - 1))\""
+      },
+      "id": "report",
+      "name": "Count staged rows",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [ 800, 300 ]
+    }
+  ],
+  "connections": {
+    "Weekly schedule": { "main": [ [ { "node": "Scrape -> staging CSV", "type": "main", "index": 0 } ] ] },
+    "Scrape -> staging CSV": { "main": [ [ { "node": "Count staged rows", "type": "main", "index": 0 } ] ] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [ { "name": "signbridge" } ]
+}
