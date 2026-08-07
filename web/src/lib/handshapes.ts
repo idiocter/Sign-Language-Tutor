@@ -110,6 +110,26 @@ export function resolveHandShape(label: string, scalarCurl = 0.3): HandShape {
   return { curl, spread, thumbOut };
 }
 
+/**
+ * Prefer the backend's per-finger articulation when the pose plan carries it (the backend is
+ * the source of truth), otherwise resolve it here from the label. This keeps authored clips
+ * and older plans — which only carry a label + scalar curl — working unchanged.
+ */
+export function handShapeFrom(
+  pose: { fingers?: number[]; spread?: number; thumb_out?: number } | null | undefined,
+  label: string,
+  scalarCurl: number,
+): HandShape {
+  if (pose?.fingers && pose.fingers.length === 5) {
+    return {
+      curl: [...pose.fingers] as Five,
+      spread: pose.spread ?? 0.15,
+      thumbOut: pose.thumb_out ?? 0.4,
+    };
+  }
+  return resolveHandShape(label, scalarCurl);
+}
+
 // --- Rig-application constants (each rig maps these onto its own bone axes) ---------------
 
 /** Natural flexion (radians) at each of the three finger joints for a unit curl. */

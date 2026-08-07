@@ -65,6 +65,10 @@ export interface HandPose {
   movement_label?: string;
   handshape: string;
   curl: number;
+  /** Per-finger flexion [thumb, index, middle, ring, pinky], 0=extended..1=folded. */
+  fingers?: [number, number, number, number, number];
+  spread?: number;
+  thumb_out?: number;
   palm_normal: [number, number, number];
 }
 

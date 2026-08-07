@@ -49,6 +49,13 @@ export default function ProducePage() {
           <textarea
             value={text}
             onChange={(e) => onChange(e.target.value)}
+            onKeyDown={(e) => {
+              // ⌘/Ctrl+Enter signs without reaching for the mouse.
+              if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && !busy && text.trim()) {
+                e.preventDefault();
+                sign();
+              }
+            }}
             rows={3}
             className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 outline-none focus:border-[var(--accent)]"
             placeholder={t("placeholder")}

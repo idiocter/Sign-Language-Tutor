@@ -16,7 +16,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import type { ProducePlan } from "@/lib/api";
 import { sample } from "@/lib/playback";
-import { resolveHandShape, CURL_JOINT_MAX, SPREAD_FAN, SPREAD_MAX, type HandShape } from "@/lib/handshapes";
+import { CURL_JOINT_MAX, SPREAD_FAN, SPREAD_MAX, type HandShape, type Five } from "@/lib/handshapes";
 
 interface Rig {
   bones: Record<string, THREE.Bone>;
@@ -139,6 +139,75 @@ function poseHand(
   if (t3) applyOffset(t3, 0, 0, sgn * shape.curl[0] * 0.6);
 }
 
+// --- Palm / wrist orientation ------------------------------------------------------------
+// Turn the hand so its palm faces the sign's palm-normal. The hand's own local axes (which
+// way its fingers and palm point) are read from the rig's REST geometry — child-bone local
+// positions — so this is correct for any humanoid rig with no hard-coded axis guesses. The
+// palm-normal sign is auto-picked from the rest pose (a Mixamo T-pose has palms facing down).
+interface HandAxes {
+  point: THREE.Vector3; // toward the fingertips, hand-local
+  normal: THREE.Vector3; // out of the palm, hand-local
+  side: THREE.Vector3; // point × normal (right-handed)
+}
+
+function captureHandAxes(bones: Record<string, THREE.Bone>, side: "Left" | "Right"): HandAxes | null {
+  const hand = bones[`${side}Hand`];
+  const mid = bones[`${side}HandMiddle1`];
+  const index = bones[`${side}HandIndex1`];
+  const pinky = bones[`${side}HandPinky1`];
+  if (!hand || !mid || !index || !pinky) return null;
+  const point = mid.position.clone().normalize(); // child local pos = direction in hand frame
+  const across = pinky.position.clone().sub(index.position); // knuckle line
+  const normal = new THREE.Vector3().crossVectors(point, across).normalize();
+  // Auto-orient the palm normal downward at rest (Mixamo T-pose palms face the floor).
+  const worldNormal = normal.clone().applyQuaternion(hand.getWorldQuaternion(new THREE.Quaternion()));
+  if (worldNormal.y > 0) normal.negate();
+  const sideV = new THREE.Vector3().crossVectors(point, normal).normalize();
+  normal.crossVectors(sideV, point).normalize(); // re-orthogonalize
+  return { point, normal, side: sideV };
+}
+
+const _Tm = new THREE.Matrix4();
+const _Sm = new THREE.Matrix4();
+const _wPoint = new THREE.Vector3();
+const _wNormal = new THREE.Vector3();
+const _wSide = new THREE.Vector3();
+const _handW = new THREE.Vector3();
+const _foreW = new THREE.Vector3();
+const _chestQ = new THREE.Quaternion();
+const _parentQ = new THREE.Quaternion();
+const _targetQ = new THREE.Quaternion();
+function orientPalm(
+  hand: THREE.Bone,
+  fore: THREE.Bone,
+  chest: THREE.Object3D,
+  axes: HandAxes,
+  palmLocal: [number, number, number],
+  alpha: number,
+) {
+  if (!hand.parent) return;
+  hand.getWorldPosition(_handW);
+  fore.getWorldPosition(_foreW);
+  _wPoint.copy(_handW).sub(_foreW).normalize(); // fingers continue past the wrist
+  chest.getWorldQuaternion(_chestQ);
+  _wNormal.set(palmLocal[0], palmLocal[1], palmLocal[2]).applyQuaternion(_chestQ);
+  _wNormal.addScaledVector(_wPoint, -_wPoint.dot(_wNormal)).normalize(); // orthogonalize vs point
+  _wSide.crossVectors(_wPoint, _wNormal).normalize();
+  _Tm.makeBasis(_wPoint, _wNormal, _wSide);
+  _Sm.makeBasis(axes.point, axes.normal, axes.side).invert();
+  _Tm.multiply(_Sm); // world rotation mapping the hand's rest axes onto the target frame
+  _targetQ.setFromRotationMatrix(_Tm);
+  hand.parent.getWorldQuaternion(_parentQ);
+  _targetQ.premultiply(_parentQ.invert()); // world → hand-local
+  hand.quaternion.slerp(_targetQ, alpha);
+  hand.updateWorldMatrix(false, true);
+}
+
+// Frame-rate-independent smoothing toward a ~90ms response, so hands glide between poses.
+function smoothing(dtMs: number): number {
+  return 1 - Math.exp(-Math.min(dtMs, 60) / 90);
+}
+
 interface CaptionOut {
   gloss: string;
   handshape: string;
@@ -166,6 +235,13 @@ export default function GltfCharacter({
   // Rest orientation of every finger bone, so handshape flexion is applied as an offset from
   // the model's natural rig rather than clobbering it.
   const fingerRest = useRef<Map<THREE.Bone, THREE.Quaternion>>(new Map());
+  const handAxes = useRef<{ Left: HandAxes | null; Right: HandAxes | null }>({ Left: null, Right: null });
+  // Smoothed state so hands glide between keyframes instead of snapping each frame.
+  const rTarget = useRef<THREE.Vector3 | null>(null);
+  const lTarget = useRef<THREE.Vector3 | null>(null);
+  const rCurl = useRef<Five>([0.2, 0.2, 0.2, 0.2, 0.2]);
+  const lCurl = useRef<Five>([0.2, 0.2, 0.2, 0.2, 0.2]);
+  const basePos = useRef(new THREE.Vector3()); // fitted base position, for the idle bob
 
   useEffect(() => {
     model.traverse((o) => {
@@ -176,6 +252,8 @@ export default function GltfCharacter({
       }
     });
     fitModel(model);
+    model.updateWorldMatrix(true, true);
+    basePos.current.copy(model.position);
     const rest = new Map<THREE.Bone, THREE.Quaternion>();
     for (const side of ["Left", "Right"] as const)
       for (const fname of FINGER_BONES)
@@ -184,13 +262,20 @@ export default function GltfCharacter({
           if (b) rest.set(b, b.quaternion.clone());
         }
     fingerRest.current = rest;
+    handAxes.current = { Left: captureHandAxes(rig.bones, "Left"), Right: captureHandAxes(rig.bones, "Right") };
   }, [model, rig]);
 
   useFrame(() => {
     const now = performance.now();
-    animTime.current += (now - lastNow.current) * speed;
+    const dtMs = now - lastNow.current;
+    animTime.current += dtMs * speed;
     lastNow.current = now;
+    const a = smoothing(dtMs);
     const f = plan ? sample(plan, animTime.current) : null;
+
+    // Subtle idle so the figure breathes and sways instead of standing dead-still.
+    model.position.y = basePos.current.y + Math.sin(now / 1400) * 0.004;
+    model.rotation.y = Math.sin(now / 3600) * 0.015;
 
     const g = f?.gloss ?? "";
     if (onCaption && g !== lastGloss.current) {
@@ -203,25 +288,37 @@ export default function GltfCharacter({
     const { bones, chest, morphMeshes } = rig;
     if (!chest) return;
 
-    // --- arms (CCD IK toward the sign hand targets) ---
-    const armIK = (side: "Left" | "Right", target: [number, number, number] | null) => {
+    // --- arms (smoothed CCD IK) + palm orientation ---
+    const driveArm = (
+      side: "Left" | "Right",
+      target: [number, number, number] | null,
+      smooth: { current: THREE.Vector3 | null },
+      palm: [number, number, number] | null,
+    ) => {
       const upper = bones[`${side}Arm`];
       const fore = bones[`${side}ForeArm`];
       const hand = bones[`${side}Hand`];
       if (!upper || !fore || !hand || !target) return;
-      ccd([fore, upper], hand, toModelWorld(chest, target));
+      const world = toModelWorld(chest, target);
+      if (!smooth.current) smooth.current = world.clone();
+      else smooth.current.lerp(world, a); // ease toward the target instead of snapping
+      ccd([fore, upper], hand, smooth.current);
+      const axes = handAxes.current[side];
+      if (axes && palm) orientPalm(hand, fore, chest, axes, palm, a);
     };
     if (f) {
-      armIK("Right", f.right);
-      armIK("Left", f.left);
+      driveArm("Right", f.right, rTarget, f.rightPalm);
+      driveArm("Left", f.left, lTarget, f.leftPalm);
     }
 
-    // --- fingers (per-handshape articulation) ---
-    // Resolve the handshape *label* (index_D, flat_5, fist_S, …) to per-finger flexion +
-    // spread + thumb, instead of applying one uniform curl to every finger.
+    // --- fingers (smoothed per-finger articulation, from the backend's per-finger data) ---
+    const driveFingers = (side: "Left" | "Right", shape: HandShape, cur: { current: Five }) => {
+      for (let i = 0; i < 5; i++) cur.current[i] += (shape.curl[i] - cur.current[i]) * a;
+      poseHand(bones, fingerRest.current, side, { curl: cur.current, spread: shape.spread, thumbOut: shape.thumbOut });
+    };
     if (f) {
-      poseHand(bones, fingerRest.current, "Right", resolveHandShape(f.rightShape, f.rightCurl));
-      if (f.left) poseHand(bones, fingerRest.current, "Left", resolveHandShape(f.leftShape, f.leftCurl));
+      driveFingers("Right", f.rightHand, rCurl);
+      if (f.left && f.leftHand) driveFingers("Left", f.leftHand, lCurl);
     }
 
     // --- head gesture ---
@@ -251,5 +348,7 @@ export default function GltfCharacter({
     }
   });
 
-  return <primitive object={model} position={[0, 0, 0]} />;
+  // No position prop here: fitModel owns the model's transform (a prop would reset it on
+  // every React re-render and undo the fit + idle bob).
+  return <primitive object={model} />;
 }

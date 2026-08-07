@@ -15,6 +15,8 @@ Nothing here is anatomically exact. It is a legible stand-in, not motion-capture
 
 from __future__ import annotations
 
+import re
+
 # --- Location anchors: where the dominant hand sits for a sign ---------------
 LOCATION_ANCHORS: dict[str, tuple[float, float, float]] = {
     "neutral_space": (0.22, -0.05, 0.35),
@@ -31,24 +33,97 @@ LOCATION_ANCHORS: dict[str, tuple[float, float, float]] = {
 _DEFAULT_ANCHOR = (0.22, -0.05, 0.35)
 
 
-# --- Handshape -> overall finger curl (0 = flat/open, 1 = closed fist) --------
+# --- Handshape -> per-finger articulation ------------------------------------
+# A handshape is not a single "how closed" scalar: a pointing "D", a spread "V", an "F" ring
+# and a fist are equally closed on average yet look nothing alike. Rendering them accurately
+# needs PER-FINGER flexion plus finger spread and a thumb configuration. This inventory,
+# keyed by handshape identity (the letter/number after the family prefix — "index_D" -> "d",
+# "flat_5" -> "5", "hand_W" -> "w"), is the backend's source of truth; the avatar applies it.
+#
+# Finger order everywhere: [thumb, index, middle, ring, pinky].
+# curl: 0 = straight/extended, 1 = folded into the palm. spread: 0 = together, 1 = full splay.
+# thumb_out: 0 = tucked/across the palm, 1 = fully out to the side.
+
+_HANDSHAPES: dict[str, dict] = {
+    # closed / fist
+    "s": {"curl": [0.85, 1, 1, 1, 1], "spread": 0.0, "thumb_out": 0.1},
+    "a": {"curl": [0.2, 1, 1, 1, 1], "spread": 0.0, "thumb_out": 0.5},
+    # flat / open
+    "b": {"curl": [0.7, 0.02, 0.02, 0.02, 0.02], "spread": 0.0, "thumb_out": 0.0},
+    "5": {"curl": [0.1, 0.05, 0.05, 0.05, 0.05], "spread": 1.0, "thumb_out": 1.0},
+    "4": {"curl": [0.95, 0.02, 0.02, 0.02, 0.02], "spread": 0.8, "thumb_out": 0.0},
+    "o": {"curl": [0.55, 0.6, 0.6, 0.6, 0.6], "spread": 0.0, "thumb_out": 0.55},
+    "c": {"curl": [0.35, 0.4, 0.4, 0.42, 0.45], "spread": 0.25, "thumb_out": 0.6},
+    # pointing / index family
+    "d": {"curl": [0.55, 0.02, 0.85, 0.95, 0.95], "spread": 0.0, "thumb_out": 0.2},
+    "1": {"curl": [0.8, 0.02, 1, 1, 1], "spread": 0.0, "thumb_out": 0.1},
+    "u": {"curl": [0.85, 0.02, 0.02, 1, 1], "spread": 0.0, "thumb_out": 0.0},
+    "v": {"curl": [0.85, 0.02, 0.02, 1, 1], "spread": 1.0, "thumb_out": 0.0},
+    "2": {"curl": [0.85, 0.02, 0.02, 1, 1], "spread": 1.0, "thumb_out": 0.0},
+    "hook": {"curl": [0.7, 0.55, 1, 1, 1], "spread": 0.0, "thumb_out": 0.3},
+    "x": {"curl": [0.7, 0.55, 1, 1, 1], "spread": 0.0, "thumb_out": 0.3},
+    # thumb-and-finger contacts
+    "f": {"curl": [0.5, 0.55, 0.02, 0.02, 0.02], "spread": 0.5, "thumb_out": 0.4},
+    "9": {"curl": [0.5, 0.55, 0.02, 0.02, 0.02], "spread": 0.5, "thumb_out": 0.4},
+    "g": {"curl": [0.2, 0.02, 1, 1, 1], "spread": 0.0, "thumb_out": 0.75},
+    "l": {"curl": [0.05, 0.02, 1, 1, 1], "spread": 0.0, "thumb_out": 1.0},
+    "w": {"curl": [0.85, 0.02, 0.02, 0.02, 1], "spread": 0.7, "thumb_out": 0.2},
+    "6": {"curl": [0.85, 0.02, 0.02, 0.02, 1], "spread": 0.5, "thumb_out": 0.2},
+    "3": {"curl": [0.1, 0.02, 0.02, 1, 1], "spread": 0.5, "thumb_out": 1.0},
+    "7": {"curl": [0.6, 0.02, 0.02, 0.9, 0.02], "spread": 0.35, "thumb_out": 0.4},
+    "8": {"curl": [0.5, 0.02, 0.85, 0.02, 0.02], "spread": 0.35, "thumb_out": 0.4},
+    # thumb extended (10)
+    "up": {"curl": [0.05, 1, 1, 1, 1], "spread": 0.0, "thumb_out": 0.85},
+    "down": {"curl": [0.05, 1, 1, 1, 1], "spread": 0.0, "thumb_out": 0.85},
+}
+
+_HANDSHAPE_FAMILIES: dict[str, str] = {
+    "fist": "s",
+    "flat": "b",
+    "index": "1",
+    "curved": "c",
+    "pinch": "f",
+    "thumb": "up",
+    "hand": "5",
+}
+_CLAW = {"curl": [0.35, 0.45, 0.45, 0.45, 0.45], "spread": 1.0, "thumb_out": 0.6}
+
+
+def handshape_articulation(handshape: str) -> dict:
+    """Resolve a handshape label to per-finger articulation (see `_HANDSHAPES`)."""
+    h = (handshape or "").lower()
+    tokens = [t for t in re.split(r"[^a-z0-9]+", h) if t]
+
+    base: dict | None = None
+    for t in tokens:  # a specific identity (letter/number) wins over the family prefix
+        if t in _HANDSHAPES:
+            base = _HANDSHAPES[t]
+            break
+    if base is None:
+        if "claw" in h:
+            base = _CLAW
+        else:
+            for t in tokens:
+                if t in _HANDSHAPE_FAMILIES:
+                    base = _HANDSHAPES[_HANDSHAPE_FAMILIES[t]]
+                    break
+    if base is None:
+        base = {"curl": [0.25, 0.25, 0.25, 0.25, 0.25], "spread": 0.2, "thumb_out": 0.4}
+
+    curl = list(base["curl"])
+    spread = base["spread"]
+    thumb_out = base["thumb_out"]
+    if "claw" in h and base is not _CLAW:  # round extended fingers into a curve
+        curl = [max(c, 0.45) for c in curl]
+        thumb_out = max(thumb_out, 0.5)
+    return {"curl": curl, "spread": spread, "thumb_out": thumb_out}
+
+
 def handshape_curl(handshape: str) -> float:
-    h = handshape.lower()
-    if "fist" in h:
-        return 1.0
-    if "claw" in h:
-        return 0.6
-    if "curved" in h:
-        return 0.4
-    if h.startswith("flat") or "5" in h or "open" in h:
-        return 0.1
-    if "thumb" in h:
-        return 0.8
-    if "pinch" in h or h.startswith("hand_"):
-        return 0.35
-    if "index" in h or h.startswith("hand_3") or h.startswith("hand_4"):
-        return 0.5
-    return 0.35
+    """Overall closedness (0 = open, 1 = fist) — the mean per-finger flexion. Kept for
+    callers that only need a scalar; the avatar uses the full per-finger articulation."""
+    curl = handshape_articulation(handshape)["curl"]
+    return round(sum(curl) / len(curl), 3)
 
 
 # --- Orientation -> palm-normal direction ------------------------------------
@@ -110,7 +185,8 @@ def pose_for(parameters) -> dict:
     Returns a JSON-serializable dict the frontend renders directly.
     """
     anchor = LOCATION_ANCHORS.get(parameters.location.lower(), _DEFAULT_ANCHOR)
-    curl = handshape_curl(parameters.handshape)
+    articulation = handshape_articulation(parameters.handshape)
+    curl = round(sum(articulation["curl"]) / 5, 3)
     normal = orientation_normal(parameters.orientation)
     movement = movement_descriptor(parameters.movement)
 
@@ -119,7 +195,10 @@ def pose_for(parameters) -> dict:
         "location_label": parameters.location,
         "movement_label": parameters.movement,
         "handshape": parameters.handshape,
-        "curl": curl,
+        "curl": curl,  # scalar mean, kept for backward compatibility
+        "fingers": articulation["curl"],  # per-finger flexion [thumb..pinky]
+        "spread": articulation["spread"],
+        "thumb_out": articulation["thumb_out"],
         "palm_normal": list(normal),
     }
     pose = {
@@ -137,6 +216,9 @@ def pose_for(parameters) -> dict:
             "location": list(left_anchor),
             "handshape": parameters.handshape,
             "curl": curl,
+            "fingers": articulation["curl"],
+            "spread": articulation["spread"],
+            "thumb_out": articulation["thumb_out"],
             "palm_normal": list(left_normal),
         }
     return pose

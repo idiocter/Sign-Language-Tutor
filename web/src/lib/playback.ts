@@ -3,6 +3,7 @@
 
 import type { AnimationStep, ProducePlan } from "./api";
 import { SIGN_CLIPS, sampleClip } from "./signClips";
+import { resolveHandShape, handShapeFrom, type HandShape } from "./handshapes";
 
 export type Vec3 = [number, number, number];
 
@@ -59,6 +60,12 @@ export interface PoseFrame {
   left: Vec3 | null;
   leftCurl: number;
   leftShape: string;
+  /** Resolved per-finger articulation (from the backend when available). */
+  rightHand: HandShape;
+  leftHand: HandShape | null;
+  /** Desired palm-normal direction in chest-local space (orientation of the hand). */
+  rightPalm: Vec3;
+  leftPalm: Vec3 | null;
   brow: { up: number; down: number };
   jawOpen: number;
   smile: number;
@@ -167,6 +174,22 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
     }
   }
 
+  // Resolve per-finger articulation: authored clips carry only a label (resolve it), while
+  // procedural steps carry the backend's per-finger data (prefer it). Palm orientation comes
+  // from the pose spec in both cases.
+  const rightHand = clip
+    ? resolveHandShape(rightShape, rightCurl)
+    : handShapeFrom(step.pose?.right_hand, rightShape, rightCurl);
+  const leftHand = left
+    ? clip
+      ? resolveHandShape(leftShape, leftCurl)
+      : handShapeFrom(step.pose?.left_hand, leftShape, leftCurl)
+    : null;
+  const rightPalm = (step.pose?.right_hand.palm_normal as Vec3) ?? [0, 0, 1];
+  const leftPalm: Vec3 | null = left
+    ? (step.pose?.left_hand?.palm_normal as Vec3) ?? [0, 0, 1]
+    : null;
+
   return {
     right,
     rightCurl,
@@ -174,6 +197,10 @@ export function sample(plan: ProducePlan, tMs: number): PoseFrame {
     left,
     leftCurl,
     leftShape,
+    rightHand,
+    leftHand,
+    rightPalm,
+    leftPalm,
     brow,
     jawOpen,
     smile,
