@@ -34,12 +34,47 @@ class LessonIn(BaseModel):
     lesson_size: int = 10
     mastery: dict[str, float] = Field(default_factory=dict)
     due_sign_ids: list[str] = Field(default_factory=list)
+    struggling: list[tuple[str, str]] = Field(
+        default_factory=list,
+        description="(sign_id, failed_parameter) pairs that each get a drill ladder",
+    )
+
+
+# --- Recursive remediation --------------------------------------------------
+
+class DrillStepOut(BaseModel):
+    kind: str                     # foundation | component | sign | target
+    depth: int                    # 0 is the sign the learner failed
+    instruction: str              # localized, learner-facing
+    sign_id: str | None = None
+    parameter: str | None = None
+    component_value: str | None = None
+    reference_sign_id: str | None = None
+    reason: str = ""
+
+
+class RemediationIn(BaseModel):
+    sign_id: str
+    failed_parameter: str = Field(
+        default="handshape", description="handshape | location | movement | orientation"
+    )
+    language: str = "en"
+    mastery: dict[str, float] = Field(default_factory=dict)
+
+
+class RemediationOut(BaseModel):
+    target_sign_id: str
+    failed_parameter: str
+    depth_reached: int
+    truncated: bool
+    steps: list[DrillStepOut]
 
 
 class LessonOut(BaseModel):
     review: list[str]
     new: list[str]
     difficulty: int
+    remediation: list[DrillStepOut] = Field(default_factory=list)
 
 
 class ReviewIn(BaseModel):

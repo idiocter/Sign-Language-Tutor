@@ -39,11 +39,14 @@ signbridge/
     scheduler.py       FSRS spaced-repetition wrapper (+ offline fallback)
     calendar_bs.py     Bikram Sambat — presentation layer only
   agents/              Symbolic agents: Curriculum, Critique (language-aware)
+    remediation.py     Recursive descent: failed sign -> foundation-first drill ladder
+  flywheel.py          Learner attempts -> gated candidates -> reviewed -> training set
 data/
   sign_schema.json     JSON-Schema contract (from Guide/)
   vocabulary.csv       Editable core vocabulary (seed of the 200-sign set)
   sign_dictionary.json Generated: `python scripts/build_dictionary.py`
 scripts/build_dictionary.py
+scripts/promote_candidates.py   Move approved learner takes into raw/, bump generation
 tests/
 ```
 
@@ -52,6 +55,8 @@ tests/
 ```bash
 python scripts/build_dictionary.py                        # compile the dictionary
 python -m signbridge.capture_tool --signer S01 --sign NSL_0001   # collect data [full]
+python scripts/promote_candidates.py --report             # where the flywheel stands
+python scripts/promote_candidates.py --apply              # promote approved learner takes
 pytest -q                                                 # foundation tests
 ```
 
@@ -62,6 +67,13 @@ pytest -q                                                 # foundation tests
 - **Language-neutral IDs.** `schema.Sign` rejects any `sign_id` not matching `NSL_dddd`.
 - **One feature layout.** Capture, preprocessing, and the model all import `config.py`, so
   their feature dimensions cannot drift apart.
+- **Learner data never enters training on its own say-so.** `flywheel.CandidateStore`
+  stages gated attempts as *candidates*; only human-approved ones are promoted, only for
+  signs that already have real studio signers, and never past the per-signer share cap.
+  Learner signer IDs live in their own `L…` namespace so they cannot collide with a studio
+  signer and quietly break the split.
+- **Recursion terminates.** `RemediationAgent` caps depth and plan length and tracks
+  visited signs, so a cycle in the component graph cannot produce an endless lesson.
 
 ## What still needs external work
 

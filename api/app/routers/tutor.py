@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from signbridge.agents.base import AgentContext
 from signbridge.agents.critique import CritiqueAgent
 from signbridge.agents.curriculum import CurriculumAgent, LessonRequest
+from signbridge.agents.remediation import RemediationAgent, RemediationPlan, RemediationRequest
 from signbridge.config import FEATURE_DIM
 from signbridge.scoring.dtw import score_attempt
 from signbridge.tutor.scheduler import Rating, ReviewCard, Scheduler
@@ -17,8 +18,11 @@ from signbridge.tutor.scheduler import Rating, ReviewCard, Scheduler
 from .. import references, tutor_store
 from ..db import get_db
 from ..schemas import (
+    DrillStepOut,
     LessonIn,
     LessonOut,
+    RemediationIn,
+    RemediationOut,
     ReviewIn,
     ReviewOut,
     ScoreIn,
@@ -32,15 +36,56 @@ _scheduler = Scheduler()
 _critique = CritiqueAgent()
 
 
+def _steps_out(steps) -> list[DrillStepOut]:
+    return [DrillStepOut(**s.__dict__) for s in steps]
+
+
+def _plan_out(plan: RemediationPlan) -> RemediationOut:
+    return RemediationOut(
+        target_sign_id=plan.target_sign_id,
+        failed_parameter=plan.failed_parameter,
+        depth_reached=plan.depth_reached,
+        truncated=plan.truncated,
+        steps=_steps_out(plan.steps),
+    )
+
+
 @router.post("/lesson", response_model=LessonOut)
 def next_lesson(payload: LessonIn) -> LessonOut:
     agent = CurriculumAgent(_dictionary())
     ctx = AgentContext(language=payload.language, mastery=payload.mastery)
     lesson = agent.run(
-        LessonRequest(lesson_size=payload.lesson_size, due_sign_ids=payload.due_sign_ids),
+        LessonRequest(
+            lesson_size=payload.lesson_size,
+            due_sign_ids=payload.due_sign_ids,
+            struggling=[tuple(pair) for pair in payload.struggling],
+        ),
         ctx,
     )
-    return LessonOut(review=lesson.review, new=lesson.new, difficulty=lesson.difficulty)
+    return LessonOut(
+        review=lesson.review,
+        new=lesson.new,
+        difficulty=lesson.difficulty,
+        remediation=_steps_out(lesson.remediation),
+    )
+
+
+@router.post("/remediation", response_model=RemediationOut)
+def remediation(payload: RemediationIn) -> RemediationOut:
+    """Recursive drill ladder for a failed sign, foundation-first.
+
+    Descends the sign's prerequisites and phonological neighbours until it reaches
+    something the learner has already mastered, then re-ascends to the failed sign.
+    """
+    agent = RemediationAgent(_dictionary())
+    ctx = AgentContext(language=payload.language, mastery=payload.mastery)
+    try:
+        plan = agent.run(RemediationRequest(payload.sign_id, payload.failed_parameter), ctx)
+    except KeyError:
+        raise HTTPException(404, f"unknown sign {payload.sign_id}") from None
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return _plan_out(plan)
 
 
 @router.post("/review", response_model=ReviewOut)
@@ -101,10 +146,20 @@ def learner_lesson(learner_id: int, size: int = 8, db: Session = Depends(get_db)
     agent = CurriculumAgent(_dictionary())
     ctx = AgentContext(language=learner.language, mastery=state["mastery"])
     lesson = agent.run(
-        LessonRequest(lesson_size=size, due_sign_ids=tutor_store.due_sign_ids(db, learner_id)),
+        LessonRequest(
+            lesson_size=size,
+            due_sign_ids=tutor_store.due_sign_ids(db, learner_id),
+            # Recent failures outrank new material: each becomes a recursive drill ladder.
+            struggling=tutor_store.struggling(db, learner_id),
+        ),
         ctx,
     )
-    return LessonOut(review=lesson.review, new=lesson.new, difficulty=lesson.difficulty)
+    return LessonOut(
+        review=lesson.review,
+        new=lesson.new,
+        difficulty=lesson.difficulty,
+        remediation=_steps_out(lesson.remediation),
+    )
 
 
 @router.post("/learner/{learner_id}/review", response_model=ReviewOut)
@@ -169,6 +224,82 @@ def score_sign(payload: ScoreSignIn) -> ScoreOut:
     if learner.ndim != 2 or learner.shape[1] != FEATURE_DIM:
         raise HTTPException(422, f"learner must be (frames, {FEATURE_DIM}); got {learner.shape}")
     return _score_and_critique(learner, ref, payload.language)
+
+
+class LearnerAttemptIn(BaseModel):
+    sign_id: str
+    learner: list[list[float]]
+
+
+class LearnerAttemptOut(BaseModel):
+    score: ScoreOut
+    remediation: RemediationOut | None = None
+
+
+@router.post("/learner/{learner_id}/attempt", response_model=LearnerAttemptOut)
+def learner_attempt(
+    learner_id: int, payload: LearnerAttemptIn, db: Session = Depends(get_db)
+) -> LearnerAttemptOut:
+    """Score an attempt, record it, and — if it failed — return the drill ladder.
+
+    This is the endpoint that makes the tutor loop recursive: the attempt is persisted, so
+    the next lesson knows what the learner is struggling with, and a failure comes back
+    with the descent already computed rather than a bare percentage.
+    """
+    learner = tutor_store.get_learner(db, learner_id)
+    if learner is None:
+        raise HTTPException(404, "unknown learner")
+    ref = references.load_reference(payload.sign_id)
+    if ref is None:
+        raise HTTPException(404, f"no reference for {payload.sign_id} — run build_references.py")
+    attempt = np.asarray(payload.learner, dtype=np.float32)
+    if attempt.ndim != 2 or attempt.shape[1] != FEATURE_DIM:
+        raise HTTPException(422, f"learner must be (frames, {FEATURE_DIM}); got {attempt.shape}")
+
+    scored = _score_and_critique(attempt, ref, learner.language)
+    tutor_store.record_attempt(
+        db, learner_id, payload.sign_id, scored.overall, scored.feedback_target
+    )
+    if scored.passed:
+        return LearnerAttemptOut(score=scored)
+
+    state = tutor_store.learner_state(db, learner)
+    ctx = AgentContext(language=learner.language, mastery=state["mastery"])
+    plan = RemediationAgent(_dictionary()).run(
+        RemediationRequest(payload.sign_id, scored.feedback_target, scored.overall), ctx
+    )
+    return LearnerAttemptOut(score=scored, remediation=_plan_out(plan))
+
+
+@router.get("/learner/{learner_id}/remediation", response_model=RemediationOut)
+def learner_remediation(
+    learner_id: int,
+    sign_id: str,
+    failed_parameter: str | None = None,
+    db: Session = Depends(get_db),
+) -> RemediationOut:
+    """The drill ladder for a sign, using the learner's stored mastery.
+
+    ``failed_parameter`` defaults to whatever the learner's most recent attempt at this
+    sign got wrong.
+    """
+    learner = tutor_store.get_learner(db, learner_id)
+    if learner is None:
+        raise HTTPException(404, "unknown learner")
+    if failed_parameter is None:
+        recent = dict(tutor_store.struggling(db, learner_id, limit=50))
+        failed_parameter = recent.get(sign_id, "handshape")
+    state = tutor_store.learner_state(db, learner)
+    ctx = AgentContext(language=learner.language, mastery=state["mastery"])
+    try:
+        plan = RemediationAgent(_dictionary()).run(
+            RemediationRequest(sign_id, failed_parameter), ctx
+        )
+    except KeyError:
+        raise HTTPException(404, f"unknown sign {sign_id}") from None
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return _plan_out(plan)
 
 
 @router.post("/score-demo", response_model=ScoreOut)

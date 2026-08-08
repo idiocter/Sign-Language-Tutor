@@ -17,6 +17,8 @@ htmlcov/
 # --- Data & models (large, collected/trained, never committed) ---
 ml/data/raw/
 ml/data/processed/
+# Learner-contributed takes awaiting review (flywheel). Personal data — never committed.
+ml/data/candidates/
 ml/data/refs/*.npy
 ml/artifacts/
 api/models/

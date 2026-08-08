@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .db import init_db
 from .routers import eval as eval_router
-from .routers import inference, interpret, produce, signs, tutor
+from .routers import flywheel, inference, interpret, produce, signs, tutor
 
 
 @asynccontextmanager
@@ -40,6 +40,7 @@ app.include_router(inference.router)
 app.include_router(produce.router)
 app.include_router(interpret.router)
 app.include_router(eval_router.router)
+app.include_router(flywheel.router)
 
 
 @app.get("/health", tags=["meta"])

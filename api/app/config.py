@@ -14,6 +14,10 @@ class Settings:
     cors_origins: list[str] = os.getenv(
         "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
     ).split(",")
+    # Shared secret for the flywheel endpoints that approve learner takes into the training
+    # set. Unset (the default) means nothing can be approved or promoted at all — data only
+    # ever enters training through a deliberate act.
+    reviewer_token: str | None = os.getenv("SIGNBRIDGE_REVIEWER_TOKEN") or None
 
 
 settings = Settings()

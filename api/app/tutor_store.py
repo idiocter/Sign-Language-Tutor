@@ -114,6 +114,33 @@ def record_attempt(db: Session, learner_id: int, sign_id: str, overall: float, t
     db.commit()
 
 
+def struggling(
+    db: Session, learner_id: int, *, threshold: float = 80.0, limit: int = 3
+) -> list[tuple[str, str]]:
+    """Signs whose *most recent* attempt fell short, with the parameter that cost the most.
+
+    Only the latest attempt per sign counts: a learner who failed a sign three times and
+    then got it should not be dragged back through a drill ladder for it. Feeds
+    ``LessonRequest.struggling``, which turns each pair into a recursive remediation plan.
+    """
+    attempts = db.scalars(
+        select(Attempt)
+        .where(Attempt.learner_id == learner_id)
+        .order_by(Attempt.created_at.desc(), Attempt.id.desc())
+    )
+    seen: set[str] = set()
+    out: list[tuple[str, str]] = []
+    for a in attempts:
+        if a.sign_id in seen:
+            continue
+        seen.add(a.sign_id)
+        if a.overall < threshold:
+            out.append((a.sign_id, a.feedback_target))
+        if len(out) >= limit:
+            break
+    return out
+
+
 def current_streak(reviews: list[ReviewState], now: datetime | None = None) -> int:
     """Consecutive days (up to today) with at least one review. BS calendar is the display
     layer; day boundaries match Gregorian, so we count Gregorian days here."""

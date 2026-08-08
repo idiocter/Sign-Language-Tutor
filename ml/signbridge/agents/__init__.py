@@ -19,6 +19,7 @@ from .curriculum import CurriculumAgent  # noqa: F401
 from .data_curator import DataCuratorAgent  # noqa: F401
 from .gloss import GlossTranslationAgent  # noqa: F401
 from .practice_partner import PracticePartnerAgent  # noqa: F401
+from .remediation import DrillStep, RemediationAgent, RemediationPlan  # noqa: F401
 
 # The six agents from TECH_STACK.md Layer 7. Vision stays outside this loop — agents only
 # ever see symbolic data (sign IDs, scores, mastery), never raw video.
@@ -30,3 +31,8 @@ ALL_AGENTS = [
     "practice_partner",
     "data_curator",
 ]
+
+# RemediationAgent is deliberately *not* a seventh entry above: it extends the Curriculum
+# agent's role (recursive descent through a sign's components after a failure) rather than
+# adding a new agent to the Layer-7 set the plan specifies. CurriculumAgent owns it.
+

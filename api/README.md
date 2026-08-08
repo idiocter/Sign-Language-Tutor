@@ -28,6 +28,13 @@ external services**. For production set `DATABASE_URL` (Postgres + pgvector) and
 | POST | `/tutor/lesson` | next lesson (Curriculum agent) |
 | POST | `/tutor/review` | submit a rating → next due date (FSRS) |
 | POST | `/tutor/score` | DTW score + localized Critique feedback |
+| POST | `/tutor/remediation` | recursive drill ladder for a failed sign |
+| POST | `/tutor/learner/{id}/attempt` | score + record an attempt, ladder back on failure |
+| GET | `/flywheel/status` | generation, candidate queue, retrain due? |
+| POST | `/flywheel/contribute` | donate a scored take as a training candidate (consent required) |
+| GET | `/flywheel/queue` | candidates awaiting review |
+| POST | `/flywheel/review/{id}` | approve/reject a candidate **(reviewer token)** |
+| POST | `/flywheel/promote` | move approved takes into training **(reviewer token)** |
 | WS | `/ws/inference` | streaming recognition **fallback** (stub) |
 
 Interactive docs at `/docs` once running.
@@ -39,3 +46,10 @@ Interactive docs at `/docs` once running.
   returns a **stub** prediction until a model is trained.
 - `/tutor/score` takes normalized landmark arrays `(frames, FEATURE_DIM)` for both the
   learner attempt and the reference sign, and returns the per-parameter error breakdown.
+- **The flywheel is default-deny.** `/flywheel/review` and `/flywheel/promote` are the only
+  endpoints that can change what the model trains on, and both 503 unless
+  `SIGNBRIDGE_REVIEWER_TOKEN` is set; requests then need a matching `X-Reviewer-Token`
+  header. Contributions still queue safely without it — they just wait for a reviewer.
+- `/flywheel/contribute` requires explicit `consent` and refuses a take it cannot
+  cross-check against the recognizer. See the [Recursive learning](../README.md#recursive-learning)
+  section for the rules the gate and promoter enforce.
